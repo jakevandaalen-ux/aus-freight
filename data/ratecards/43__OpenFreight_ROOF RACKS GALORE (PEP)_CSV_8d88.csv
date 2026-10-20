@@ -1,0 +1,8 @@
+Service,ZoneFrom,ZoneTo,EffectiveDate,CalcMethod,Reciprocal,Accumulative,CubicRate,Minimum,"Cubic Limit","Weight Limit",ExcessCharge,ExcessLimit,TaxCode,Type1,Break1,Basic1,Rate1,Type2,Break2,Basic2,Rate2,Type3,Break3,Basic3,Rate3,Type4,Break4,Basic4,Rate4,Type5,Break5,Basic5,Rate5
+PEPXP,PER,PER,,,FALSE,FALSE,250,0,,,,,GST,ITM,3,10.2522,0,ITM,6,20.2903,0,ITM,9,30.3285,0,ITM,12,40.3666,0,ITM,99999,0.214,0
+PEPEZ1,PER,WA1,,,FALSE,FALSE,333,21.4033,,,,,GST,KG,99999,14.26,0.2247,,,,,,,,,,,,,,,,
+PEPEZ2,PER,WA2,,,FALSE,FALSE,333,24.0788,,,,,GST,KG,99999,15.5977,0.3231,,,,,,,,,,,,,,,,
+PEPEZ3,PER,WA3,,,FALSE,FALSE,333,28.0919,,,,,GST,KG,99999,16.9353,0.5338,,,,,,,,,,,,,,,,
+PEPEZ4,PER,WA4,,,FALSE,FALSE,333,33.4427,,,,,GST,KG,99999,28.3059,0.6039,,,,,,,,,,,,,,,,
+PEPEZ5,PER,WA5,,,FALSE,FALSE,333,42.8066,,,,,GST,KG,99999,30.3124,0.8427,,,,,,,,,,,,,,,,
+PDPUF,PER,PER,,,FALSE,FALSE,0,0,,,,,GST,ITM,1,6.1,0,,,,,,,,,,,,,,,,

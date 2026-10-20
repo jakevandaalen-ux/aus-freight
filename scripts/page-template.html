@@ -107,7 +107,8 @@ td.w,td.g{font-weight:600}
 .legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12.5px;color:var(--muted)}
 .legend span{display:inline-flex;align-items:center;gap:5px}
 .legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
-#r-tab td small{display:block;font-size:11px;color:var(--muted)}
+#r-tab td small,#c-tab td small{display:block;font-size:11px;color:var(--muted)}
+#r-tab td small.w{color:var(--bad)}#r-tab td small.g{color:var(--good)}
 #r-tab td.na{color:var(--muted)}
 .flags{display:flex;flex-direction:column;gap:8px}
 .flag{border-left:3px solid var(--bad);padding:6px 10px;font-size:13.5px;background:var(--soft);border-radius:0 6px 6px 0}
@@ -245,6 +246,11 @@ th:first-child,td:first-child{text-align:left}
           <h2 id="r-h">What a customer pays</h2>
           <div style="overflow-x:auto"><table id="r-tab"><thead><tr><th>Delivering to</th><th>From</th><th>Metro</th><th>Outer metro</th><th>Regional</th></tr></thead><tbody></tbody></table></div>
         </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <h2 id="c-h">What it actually costs us</h2>
+          <div style="overflow-x:auto"><table id="c-tab"><thead><tr><th>Shipped</th><th>Metro</th><th>Outer metro</th><th>Regional</th></tr></thead><tbody></tbody></table></div>
+          <p class="note" style="margin:0">Median carrier cost incl. GST for matched orders of this size that went as one invoice in one shipment, with the cheapest carrier we've used on at least three of them. Same state means the warehouse is in the customer's state.</p>
+        </div>
         <div class="flags" id="r-flags"></div>
         <p class="note">Prices include GST and are per order, as set in each state's tab of the shipping sheet ("Freight Charges for … Orders"). The destination tab follows the website's postcode list, so a few border towns use the neighbouring state's tab (Queanbeyan uses ACT, Tweed Heads uses QLD, Wentworth uses VIC). "First choice" is the warehouse at the top of the sheet's Source Hierarchy preference list for that state. Click a postcode for every size, both services and delivery times.</p>
       </section>
@@ -280,6 +286,7 @@ const STATES=__STATES__;
 const WH=__WH__.map(([st,name,addr,pc,lat,lon])=>({st,name,addr,pc,lat,lon}));
 const PC=__PC__.map(([pc,lat,lon,st,ra,names,n,z,area,kind])=>({pc,lat,lon,st,ra,names,n,zn:z<0?4:z,area,kind}));
 const SZ=['Small','Medium','Large','XL','XXL'];
+const COST=__COST__;
 const OD=__ORD__,CARS=OD.CARS,MD=__MATCH__,WR=__WEB__;
 let view='del';
 // remote postcodes drawn in boxes at the map's edge, out of their true position
@@ -452,6 +459,7 @@ try{const s=JSON.parse(localStorage.getItem('auRate')||'{}');if(s.size>=0&&s.siz
 const MISS=new Set(WR.miss);
 PC.forEach((p,i)=>{p.wst=WR.over[i]||p.st;p.wmiss=MISS.has(i);});
 const whOf=st=>WH.findIndex(w=>w.st===st);
+const costOf=(local,sz,z)=>{const c=COST[local?'L':'I'][sz];return c&&c[z]&&c[z].n>=5?c[z]:null;};
 const fromFor=(dst,from)=>from||WR.pref[dst][0];
 const priceOf=(dst,from,svc,size,z)=>{const r=WR.R[dst]&&WR.R[dst][from];return r?r[svc][size][z]:undefined;};
 const etaOf=(dst,from,svc,size,z)=>{const r=WR.E[dst]&&WR.E[dst][from];return r?r[svc][size][z]:null;};
@@ -481,7 +489,12 @@ function renderRates(){
   const order=['QLD','NSW','ACT','VIC','TAS','SA','WA','NT'];
   document.querySelector('#r-tab tbody').innerHTML=order.map(dst=>{const fr=fromFor(dst,rFrom);const wi=whOf(fr);
     return `<tr><td>${dst}</td><td style="text-align:left">${wi>=0?esc(WH[wi].name):fr}</td>${[0,1,2].map(z=>{const v=priceOf(dst,fr,rSvc,rSize,z),e=etaOf(dst,fr,rSvc,rSize,z);
-      return v==null?`<td class="na">${WR.R[dst][fr]?'blank':'no table'}</td>`:`<td>${money(v)}${e?`<small>${esc(e)}</small>`:''}</td>`;}).join('')}</tr>`;}).join('');
+      const c=costOf(fr===dst,rSize+1,z);
+      return v==null?`<td class="na">${WR.R[dst][fr]?'blank':'no table'}</td>`:`<td>${money(v)}${e?`<small>${esc(e)}</small>`:''}${c?`<small class="${c.med>v?'w':'g'}">costs ~${money0(c.med)}</small>`:''}</td>`;}).join('')}</tr>`;}).join('');
+  document.getElementById('c-h').textContent=`What it actually costs us · ${SZ[rSize]}`;
+  document.querySelector('#c-tab tbody').innerHTML=[['L','Same state'],['I','Interstate']].map(([k,l])=>`<tr><td>${l}</td>${[0,1,2].map(z=>{const c=COST[k][rSize+1]&&COST[k][rSize+1][z];
+    if(!c)return '<td class="na">no orders</td>';const cb=c.cars[0];
+    return `<td>${money(c.med)}<small>${c.n} orders · charged avg ${money(c.ch)}</small>${cb?`<small>cheapest: ${esc(tcase(cb[0]))} ${money0(cb[1])}</small>`:''}</td>`;}).join('')}</tr>`).join('');
   if(sel)pick(sel);draw();}
 function ratePick(p){
   if(p.wmiss)return `<p class="note" style="margin-top:8px">This postcode isn't in the website's postcode list, so the sheet gives it no rate.</p>`;
