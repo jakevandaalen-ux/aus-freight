@@ -1,5 +1,5 @@
 t=open('scripts/page-template.html').read()
-o=t.replace('__STATES__',open('data/states.json').read()).replace('__PC__',open('data/postcodes.json').read()).replace('__WH__',open('data/warehouses.json').read()).replace('__ORD__',open('data/orders.json').read()).replace('__MATCH__',open('data/matched.json').read()).replace('__WEB__',open('data/webrates.json').read()).replace('__COST__',open('data/costs.json').read())
+o=t.replace('__STATES__',open('data/states.json').read()).replace('__PC__',open('data/postcodes.json').read()).replace('__WH__',open('data/warehouses.json').read()).replace('__ORD__',open('data/orders.json').read()).replace('__MATCH__',open('data/matched.json').read()).replace('__WEB__',open('data/webrates.json').read()).replace('__COST__',open('data/costs.json').read()).replace('__PRODUCTS__',open('data/products.json').read()).replace('__SUBS__',open('data/subs.json').read())
 import os; os.makedirs('/mnt/user-data/outputs',exist_ok=True)
 open('/mnt/user-data/outputs/au-freight-map.html','w').write(o)
 open('/home/claude/au/test.html','w').write('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0">'+o+'</body></html>')

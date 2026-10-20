@@ -116,6 +116,62 @@ td.w,td.g{font-weight:600}
 .ptab{width:100%;font-size:13px;margin-top:4px}
 .ptab td,.ptab th{padding:4px 6px 4px 0}
 .ptab td small{color:var(--muted);font-size:11px}
+.calcf{display:flex;flex-direction:column;gap:12px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:13.5px;color:var(--muted)}
+label.f input,label.f select,.combo input,.dims input{padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--land);color:var(--ink);font:inherit;font-size:15px;min-width:0}
+.row2{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:8px}
+label.f select{width:100%}
+.dims{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.presets{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.presets button{border:1px solid var(--line);background:var(--land);color:var(--ink);border-radius:999px;padding:4px 10px;font:500 13px var(--body);cursor:pointer}
+.presets button:hover{border-color:var(--ink)}
+.custom summary{cursor:pointer;font-size:14px}
+.addbtn{margin-top:8px;padding:8px 14px;border:0;border-radius:6px;background:var(--ink);color:var(--panel);font:600 14px var(--body);cursor:pointer}
+.combo{position:relative;color:var(--muted);font-size:13.5px;display:flex;flex-direction:column;gap:4px}
+.combo ul{position:absolute;left:0;right:0;top:100%;margin:4px 0 0;padding:4px;list-style:none;background:var(--panel);border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.18);z-index:6;max-height:320px;overflow:auto}
+.combo li{padding:7px 8px;border-radius:6px;cursor:pointer;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;font-size:13.5px;color:var(--ink)}
+.combo li[aria-selected=true],.combo li:hover{background:var(--soft)}
+.combo li .sku{font-weight:600}.combo li .pr{text-align:right;font-variant-numeric:tabular-nums}
+.combo li .d{color:var(--muted);font-size:12.5px;grid-column:1/-1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.combo .none{color:var(--muted);cursor:default}
+.ordhead{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.lines{display:flex;flex-direction:column}
+.line{display:grid;grid-template-columns:minmax(0,1fr) 64px 28px;gap:4px 8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.line .nm{min-width:0}.line .nm b{font-weight:600}
+.line .nm .d{display:block;color:var(--muted);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.line .nm .m{display:block;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
+.line input{padding:6px 8px;text-align:right;border:1px solid var(--line);border-radius:6px;background:var(--land);color:var(--ink);font:inherit}
+.line button.x{border:0;background:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;padding:4px}
+.line button.x:hover{color:var(--bad)}
+.chip.w{display:inline-block;padding:0 6px;border-radius:999px;font-size:11px;background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)}
+.empty{color:var(--muted);font-size:13.5px;margin:8px 0}
+.result{border:1px solid var(--line);border-radius:8px;background:var(--land);padding:14px;display:flex;flex-direction:column;gap:12px}
+.result .dest{font-size:13.5px;color:var(--muted)}
+.result .dest b{display:block;font:700 20px/1.15 var(--display);color:var(--ink)}
+.webp{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.webp div{border:1px solid var(--line);border-radius:6px;padding:8px 10px;background:var(--panel)}
+.webp div.on{box-shadow:inset 0 0 0 2px var(--ink);border-color:var(--ink)}
+.webp span{display:block;font-size:12.5px;color:var(--muted)}
+.webp b{font:700 26px/1.1 var(--display);font-variant-numeric:tabular-nums}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.opt{border-radius:6px;padding:10px;background:var(--panel);border:1px solid var(--line);text-align:left;font:inherit;color:inherit;cursor:pointer;display:flex;flex-direction:column;width:100%}
+.opt:hover{border-color:var(--ink)}
+.opt[aria-checked=true]{border-color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
+.opt[disabled]{cursor:default;opacity:.65}
+.opt .pick{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted)}
+.opt .dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--line);flex:none}
+.opt[aria-checked=true] .dot{border-color:var(--ink);background:radial-gradient(var(--ink) 40%,transparent 45%)}
+.opt b{font:700 24px/1.15 var(--display);font-variant-numeric:tabular-nums}
+.opt small{display:block;color:var(--muted);font-size:12px;line-height:1.35;margin-top:2px}
+.opt .tag{display:inline-block;margin-left:4px;padding:0 6px;border-radius:999px;font-size:11px;font-weight:600;background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good)}
+.msg{font-size:13.5px;margin:0}.msg.w{color:var(--bad)}.msg.g{color:var(--good)}
+.result dl.kv{margin:0;grid-template-columns:minmax(0,1fr) auto}
+.result dl.kv dd{text-align:right;font-variant-numeric:tabular-nums}
+.sep{grid-column:1/-1;border-top:1px solid var(--line);margin:2px 0}
+.pinl{stroke:var(--ink);stroke-width:2;stroke-dasharray:5 4;vector-effect:non-scaling-stroke;fill:none}
+.pin circle{fill:var(--hi);stroke:var(--land);stroke-width:2}
+.pin text{font:700 13px var(--body);fill:var(--ink);paint-order:stroke;stroke:var(--land);stroke-width:4px;stroke-linejoin:round}
+.calcmode .pc{opacity:.35}
 .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line)}
 .tabs button{padding:8px 12px;border:0;border-bottom:3px solid transparent;background:transparent;color:var(--muted);font:600 15px var(--body);cursor:pointer;margin-bottom:-1px}
 .tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--wh)}
@@ -149,6 +205,8 @@ th:first-child,td:first-child{text-align:left}
 .tabs{overflow-x:auto;scrollbar-width:none}
 @media (max-width:820px){
   .ofilt3{grid-template-columns:1fr 1fr}
+  .row2,.webp{grid-template-columns:minmax(0,1fr)}
+  .dims{grid-template-columns:repeat(2,minmax(0,1fr))}
   #p-rate .ofilt3{grid-template-columns:1fr}
   .wrap{grid-template-columns:minmax(0,1fr);grid-template-rows:60vh auto;height:auto}
   aside{border-left:0;border-top:1px solid var(--line);overflow:visible}
@@ -173,6 +231,7 @@ th:first-child,td:first-child{text-align:left}
         <button role="tab" id="t-del" aria-selected="true" aria-controls="p-del">Deliveries</button>
         <button role="tab" id="t-ord" aria-selected="false" aria-controls="p-ord">Orders</button>
         <button role="tab" id="t-rate" aria-selected="false" aria-controls="p-rate">Charges</button>
+        <button role="tab" id="t-calc" aria-selected="false" aria-controls="p-calc">Calculator</button>
         <button role="tab" id="t-pc" aria-selected="false" aria-controls="p-pc">Postcodes</button>
       </div>
       <input type="search" id="q" placeholder="Find a postcode or suburb, e.g. 4870 or Cairns" aria-label="Find a postcode or suburb">
@@ -254,6 +313,41 @@ th:first-child,td:first-child{text-align:left}
         <div class="flags" id="r-flags"></div>
         <p class="note">Prices include GST and are per order, as set in each state's tab of the shipping sheet ("Freight Charges for … Orders"). The destination tab follows the website's postcode list, so a few border towns use the neighbouring state's tab (Queanbeyan uses ACT, Tweed Heads uses QLD, Wentworth uses VIC). "First choice" is the warehouse at the top of the sheet's Source Hierarchy preference list for that state. Click a postcode for every size, both services and delivery times.</p>
       </section>
+      <section id="p-calc" role="tabpanel" aria-labelledby="t-calc" class="sect" hidden>
+        <p class="sub" style="margin:0">Build an order from your products, pick where it's going, and compare what the website charges with what orders like it have cost us to send.</p>
+        <form id="calc" autocomplete="off" class="calcf">
+          <label class="f">Deliver to (suburb or postcode)
+            <input type="text" id="c-dest" list="c-subs" placeholder="e.g. Toowoomba or 4350" value="Toowoomba">
+          </label>
+          <datalist id="c-subs"></datalist>
+          <div class="row2">
+            <label class="f">Ships from<select id="c-from"><option value="">Website's first-choice warehouse</option></select></label>
+            <label class="f">Website service<select id="c-svc"><option value="standard">Standard</option><option value="priority">Priority</option></select></label>
+          </div>
+          <div class="f combo">
+            <label for="c-sku">Add products by SKU or name</label>
+            <input type="search" id="c-sku" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="skuList" placeholder="e.g. SZ126B, RX100 or roof box">
+            <ul id="skuList" role="listbox" hidden></ul>
+          </div>
+          <div>
+            <div class="ordhead"><h2 style="margin:0">Order</h2><button type="button" class="linkbtn" id="clearOrder">Clear order</button></div>
+            <div class="lines" id="lines"></div>
+          </div>
+          <details class="custom">
+            <summary>Add an item that isn't in the product list</summary>
+            <div class="presets" id="presets"></div>
+            <div class="dims">
+              <label class="f">Length cm<input type="number" id="c-l" min="0" step="1" value="150"></label>
+              <label class="f">Width cm<input type="number" id="c-w" min="0" step="1" value="15"></label>
+              <label class="f">Height cm<input type="number" id="c-h" min="0" step="1" value="12"></label>
+              <label class="f">Weight kg<input type="number" id="c-kg" min="0" step="0.5" value="9"></label>
+            </div>
+            <button type="button" class="addbtn" id="addCustom">Add to order</button>
+          </details>
+        </form>
+        <div class="result" id="out" aria-live="polite"></div>
+        <p class="note">Website charges come from the October 2025 shipping sheet for the order's size (the website's 1–5 score: the highest of longest side, cubic weight at 250 kg/m³ and actual weight, taken from the order's biggest item) and include GST. Carrier costs are not rate-card prices: the rate cards can't be priced without each carrier's postcode zones and surcharges. Instead each carrier's figure is the median that carrier actually charged us (invoiced, or the estimate where not yet billed, plus GST) on past matched orders of the same website size, sent as one shipment from the same warehouse to the same state and Australia Post zone, with the longest item on the same side of 1.05 m and a similar chargeable weight (the greater of weight or cubic × 250). If there aren't at least six, it widens the weight range, then to any destination in that zone, then to any warehouse. Australia Post is ruled out for items over 1.05 m long, 22 kg or 0.25 m³ (its parcel limits). Product sizes, prices and costs come from your product export (20 October 2026).</p>
+      </section>
       <section id="p-pc" role="tabpanel" aria-labelledby="t-pc" class="sect" hidden>
       <div class="stats">
         <div><b id="s-pc">–</b><span>postcodes shown</span></div>
@@ -286,7 +380,7 @@ const STATES=__STATES__;
 const WH=__WH__.map(([st,name,addr,pc,lat,lon])=>({st,name,addr,pc,lat,lon}));
 const PC=__PC__.map(([pc,lat,lon,st,ra,names,n,z,area,kind])=>({pc,lat,lon,st,ra,names,n,zn:z<0?4:z,area,kind}));
 const SZ=['Small','Medium','Large','XL','XXL'];
-const COST=__COST__;
+const COST=__COST__,PRODUCTS=__PRODUCTS__,SUBS=__SUBS__;
 const OD=__ORD__,CARS=OD.CARS,MD=__MATCH__,WR=__WEB__;
 let view='del';
 // remote postcodes drawn in boxes at the map's edge, out of their true position
@@ -338,10 +432,10 @@ WH.forEach(w=>{w.xy=proj(w.lon,w.lat);const grp=el('g',{class:'wh'});grp.append(
 let k=1,tx=0,ty=0,base=1;
 const X0=(108.6-112)*kx*100,W=(162-112)*kx*100-X0,H=(46.5-9.5)*100;   // room either side for the remote-island boxes and warehouse labels
 function draw(){const z=k/base,f=Math.pow(z,0.4);
-  PC.forEach(p=>{const s=p.el.classList.contains('sel');const n=view==='del'?p.dn:view==='ord'?p.on:0;const r=(view==='pc'||view==='rate')?(s?6:3.1):(2.2+Math.sqrt(n||0)*1.5)+(s?2:0);p.el.setAttribute('r',r*f/k);});
+  PC.forEach(p=>{const s=p.el.classList.contains('sel');const n=view==='del'?p.dn:view==='ord'?p.on:0;const r=(view==='pc'||view==='rate'||view==='calc')?(s?6:3.1):(2.2+Math.sqrt(n||0)*1.5)+(s?2:0);p.el.setAttribute('r',r*f/k);});
   const tr=xy=>`translate(${xy[0]},${xy[1]}) scale(${1/k})`;
   cities.forEach(c=>c.grp.setAttribute('transform',tr(c.xy)));WH.forEach(w=>w.grp.setAttribute('transform',tr(w.xy)));PC.forEach(p=>{if(p.ig)p.ig.setAttribute('transform',tr(p.xy));});labels.forEach(l=>l.t.setAttribute('transform',`translate(${l.xy[0]},${l.xy[1]}) scale(${1/k})`));
-  svg.classList.toggle('minor-off',z<1.8);   // cities in the crowded south-east appear once zoomed in
+  svg.classList.toggle('minor-off',z<1.8);svg.classList.toggle('calcmode',view==='calc');pinG.style.display=view==='calc'&&pin.xy?'':'none';lineG.style.display=pinG.style.display;if(pin.xy)pinG.setAttribute('transform',`translate(${pin.xy[0]},${pin.xy[1]}) scale(${1/k})`);   // cities in the crowded south-east appear once zoomed in
   g.setAttribute('transform',`translate(${tx},${ty}) scale(${k})`);}
 function fit(){const b=svg.getBoundingClientRect();base=Math.min(b.width/W,b.height/H)*0.94;k=base;tx=(b.width-W*k)/2-X0*k;ty=(b.height-H*k)/2;draw();}
 function zoomAt(f,cx,cy){const nk=Math.max(base*0.8,Math.min(base*40,k*f));tx=cx-(cx-tx)*nk/k;ty=cy-(cy-ty)*nk/k;k=nk;draw();}
@@ -354,7 +448,7 @@ addEventListener('pointermove',e=>{if(!ptrs.has(e.pointerId))return;const prev=p
 addEventListener('pointerup',e=>{ptrs.delete(e.pointerId);if(!ptrs.size)drag=null;});
 const ctr=f=>{const b=svg.getBoundingClientRect();zoomAt(f,b.width/2,b.height/2);};
 document.getElementById('zin').onclick=()=>ctr(1.6);document.getElementById('zout').onclick=()=>ctr(1/1.6);document.getElementById('zreset').onclick=fit;
-addEventListener('resize',fit);
+addEventListener('resize',()=>{fit();if(view==='calc')calc();});
 /* colour mode + class toggles + stats */
 let mode='zone';try{const m=localStorage.getItem('auMode');if(m==='ra'||m==='zone')mode=m;}catch(e){}
 const classes=()=>mode==='zone'?ZN.map(z=>z[0]):[...RA.map(r=>r[0]),'Not classified'];
@@ -369,7 +463,7 @@ function buildChips(){on=classes().map(()=>true);raBox.innerHTML='';
   recolour();
   document.getElementById('m-zone').setAttribute('aria-pressed',mode==='zone');document.getElementById('m-ra').setAttribute('aria-pressed',mode==='ra');}
 function recolour(){if(view==='rate'){rateColour();return;}PC.forEach(p=>{const v=view!=='pc'?`var(${ZN[p.zn][1]})`:`var(${varOf(clsOf(p))})`;p.el.style.fill=v;if(p.kind!=='D')p.el.style.stroke=v;});}
-function apply(){if(view==='del'){applyDel();return;}if(view==='ord'){renderOrders();return;}if(view==='rate'){renderRates();return;}[...raBox.children].forEach((b,i)=>b.setAttribute('aria-pressed',on[i]));
+function apply(){if(view==='del'){applyDel();return;}if(view==='ord'){renderOrders();return;}if(view==='rate'){renderRates();return;}if(view==='calc'){PC.forEach(p=>{const ok=p.kind==='D';p.el.style.display=ok?'':'none';if(p.ig)p.ig.style.display=ok?'':'none';});calc();return;}[...raBox.children].forEach((b,i)=>b.setAttribute('aria-pressed',on[i]));
   const po=document.getElementById('showpo').checked,ok=p=>on[clsOf(p)]&&(po||p.kind==='D');
   const vis=PC.filter(ok);PC.forEach(p=>{p.el.style.display=ok(p)?'':'none';if(p.ig)p.ig.style.display=ok(p)?'':'none';});
   document.getElementById('s-pc').textContent=vis.length.toLocaleString();
@@ -410,12 +504,12 @@ function applyDel(){
     li.innerHTML=`<b>${p.pc}</b><span>${esc(p.names.split(', ')[0])} <span class="m">${p.st}</span></span><span class="m">avg ${money(p.dc/p.dn)}</span><span>${p.dn}</span>`;
     li.onclick=()=>flyTo(p);li.onkeydown=e=>{if(e.key==='Enter')flyTo(p);};top.append(li);});
   draw();}
-function setView(v){view=v;['del','ord','rate','pc'].forEach(x=>{document.getElementById('t-'+x).setAttribute('aria-selected',v===x);document.getElementById('p-'+x).hidden=v!==x;});
+function setView(v){view=v;['del','ord','rate','calc','pc'].forEach(x=>{document.getElementById('t-'+x).setAttribute('aria-selected',v===x);document.getElementById('p-'+x).hidden=v!==x;});
   try{localStorage.setItem('auView',v);}catch(e){}recolour();apply();draw();}
-document.getElementById('t-del').onclick=()=>setView('del');document.getElementById('t-pc').onclick=()=>setView('pc');document.getElementById('t-ord').onclick=()=>setView('ord');document.getElementById('t-rate').onclick=()=>setView('rate');
-try{const v=localStorage.getItem('auView');if(['pc','ord','rate'].includes(v))view=v;}catch(e){}
+document.getElementById('t-del').onclick=()=>setView('del');document.getElementById('t-pc').onclick=()=>setView('pc');document.getElementById('t-ord').onclick=()=>setView('ord');document.getElementById('t-rate').onclick=()=>setView('rate');document.getElementById('t-calc').onclick=()=>setView('calc');
+try{const v=localStorage.getItem('auView');if(['pc','ord','rate','calc'].includes(v))view=v;}catch(e){}
 /* matched orders */
-const MO=MD.map(([pi,wi,ci,ch,co,tot,cogs,date,ninv,nsh,skus,kg,vol,cub,type,inv,sz,ws,wp,svc,fl])=>({p:PC[pi],wi,ci,ch,co:co*1.1,tot,cogs,date,ninv,nsh,skus,kg,vol,cub,type,inv,sz,ws,wp,svc,fl,web:!sz?null:svc==='p'?wp:ws}));
+const MO=MD.map(([pi,wi,ci,ch,co,tot,cogs,date,ninv,nsh,skus,kg,vol,cub,type,inv,sz,ws,wp,svc,fl,lg])=>({p:PC[pi],wi,ci,ch,co:co*1.1,tot,cogs,date,ninv,nsh,skus,kg,vol,cub,type,inv,sz,ws,wp,svc,fl,lg,web:!sz?null:svc==='p'?wp:ws}));
 {const w=document.getElementById('o-wh');WH.forEach((x,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`${x.st} · ${x.name}`;w.append(o);});
  const c=document.getElementById('o-car');CARS.forEach((x,i)=>{if(!MO.some(o=>o.ci===i))return;const o=document.createElement('option');o.value=i;o.textContent=tcase(x);c.append(o);});
  document.getElementById('o-cnt').textContent=`${MO.length.toLocaleString()} customers, ${MO.reduce((s,o)=>s+o.ninv,0).toLocaleString()} invoices and ${MO.reduce((s,o)=>s+o.nsh,0).toLocaleString()} shipments`;}
@@ -506,6 +600,139 @@ function ratePick(p){
   return `<h2 style="margin-top:12px;font-size:16px">Website charge · ${RZ[z]}${dst!==p.st?`, ${dst} tab`:''}</h2>
     <table class="ptab"><thead><tr><th>From ${wi>=0?esc(WH[wi].name):fr}</th><th>Standard</th><th>Priority</th></tr></thead><tbody>${rows}</tbody></table>
     <table class="ptab"><thead><tr><th>${SZ[rSize]}, ${rSvc}, from each warehouse</th><th></th></tr></thead><tbody>${others}</tbody></table>`;}
+/* calculator */
+const pinG=el('g',{class:'pin'}),lineG=el('g',{});g.append(lineG,pinG);pinG.append(el('circle',{r:7}));const pinT=el('text',{x:11,y:4});pinG.append(pinT);
+const pin={xy:null};
+{const dl=document.getElementById('c-subs');const seen=new Set(),fr=document.createDocumentFragment();
+ SUBS.forEach(([n,i])=>{const p=PC[i];const l=`${n}, ${p.st} ${p.pc}`;if(seen.has(l))return;seen.add(l);const o=document.createElement('option');o.value=l;fr.append(o);});dl.append(fr);
+ const cf=document.getElementById('c-from');WH.slice().sort((a,b)=>a.st.localeCompare(b.st)).forEach(w=>{const o=document.createElement('option');o.value=w.st;o.textContent=`${w.st} · ${w.name}`;cf.append(o);});}
+function resolveDest(q){q=q.trim();if(!q)return null;
+  const m=q.match(/(\d{3,4})\s*$/);
+  if(m){const pc=m[1].padStart(4,'0');const p=PC.find(p=>p.pc===pc&&p.kind==='D')||PC.find(p=>p.pc===pc);if(!p)return {err:`Postcode ${pc} isn't in Australia Post's list.`};
+    const nm=q.replace(/,?\s*(ACT|NSW|NT|QLD|SA|TAS|VIC|WA)?\s*\d{3,4}\s*$/i,'').trim();return {p,name:nm||p.names.split(', ')[0]};}
+  const l=q.toLowerCase().split(',')[0].trim();
+  const s=SUBS.find(([n])=>n.toLowerCase()===l)||SUBS.find(([n])=>n.toLowerCase().startsWith(l));
+  if(!s)return {err:`"${q}" isn't in Australia Post's list. Pick a suburb from the suggestions or enter a postcode.`};
+  return {p:PC[s[1]],name:s[0]};}
+const PROD=PRODUCTS.map(([sku,desc,price,buy,l,w,h,kg],i)=>({i,sku,desc,price,buy,l,w,h,kg,key:(sku+' '+desc).toLowerCase(),sl:sku.toLowerCase()}));
+const bySku=new Map();PROD.forEach(p=>{if(!bySku.has(p.sl))bySku.set(p.sl,p);});
+function searchP(q){q=q.trim().toLowerCase();if(!q)return [];const toks=q.split(/\s+/);const res=[];
+  for(const p of PROD){if(!toks.every(t=>p.key.includes(t)))continue;
+    const s=p.sl===q?0:p.sl.startsWith(q)?1:p.sl.includes(q)?2:3;res.push([s,p]);if(res.length>600)break;}
+  return res.sort((a,b)=>a[0]-b[0]||a[1].sku.length-b[1].sku.length).slice(0,10).map(r=>r[1]);}
+let order=[];
+function saveOrder(){try{localStorage.setItem('auOrder',JSON.stringify(order.map(o=>o.p?{sku:o.p.sku,qty:o.qty}:{c:o.c,qty:o.qty})));}catch(e){}}
+try{const s=JSON.parse(localStorage.getItem('auOrder')||'null');if(Array.isArray(s))order=s.map(o=>o.sku?{p:bySku.get(o.sku.toLowerCase()),qty:o.qty}:{c:o.c,qty:o.qty}).filter(o=>o.p||o.c);}catch(e){}
+if(!order.length){const d=bySku.get('sz126b');if(d)order=[{p:d,qty:2}];}
+const itemOf=o=>o.p?{name:o.p.sku,desc:o.p.desc,l:o.p.l,w:o.p.w,h:o.p.h,kg:o.p.kg,price:o.p.price,buy:o.p.buy}:{name:o.c.name,desc:'Custom item',l:o.c.l,w:o.c.w,h:o.c.h,kg:o.c.kg,price:0,buy:0,custom:true};
+function webScore(i){const kg=i.kg||0;let ls=0,cs=0;
+  if(i.l&&i.w&&i.h){const L=Math.max(i.l,i.w,i.h),cw=i.l*i.w*i.h*250;ls=L<0.5?0:L<1.8?1:L<3.5?2:L<5?3:4;cs=cw<10?0:cw<25?1:cw<100?2:cw<180?3:4;}
+  const ws=kg<5?0:kg<15?1:kg<22?2:kg<35?3:4;
+  return {s:Math.max(ls,cs,ws),by:ls>=cs&&ls>=ws?'longest side':cs>=ws?'cubic weight':'weight'};}
+function renderLines(){const box=document.getElementById('lines');
+  if(!order.length){box.innerHTML='<p class="empty">No items yet. Search for a SKU above, or add a custom item below.</p>';saveOrder();return;}
+  box.innerHTML='';order.forEach((o,idx)=>{const it=itemOf(o);const row=document.createElement('div');row.className='line';
+    const noDims=!(it.l&&it.w&&it.h),sc=webScore(it);
+    row.innerHTML=`<div class="nm"><b>${esc(it.name)}</b>${it.price?` <span class="m" style="display:inline">${money(it.price)}</span>`:''}<span class="d" title="${esc(it.desc)}">${esc(it.desc)}</span>
+      <span class="m">${noDims?'<span class="chip w">No dimensions on file</span>':`${it.l.toFixed(2)} × ${it.w.toFixed(2)} × ${it.h.toFixed(2)} m`} · ${it.kg?it.kg+' kg':'<span class="chip w">no weight</span>'} · ${SZ[sc.s]}</span></div>
+      <input type="number" min="1" step="1" value="${o.qty}" aria-label="Quantity of ${esc(it.name)}">
+      <button type="button" class="x" aria-label="Remove ${esc(it.name)}">×</button>`;
+    row.querySelector('input').addEventListener('input',e=>{const v=parseInt(e.target.value,10);if(v>0){o.qty=v;saveOrder();calc();}});
+    row.querySelector('button').onclick=()=>{order.splice(idx,1);renderLines();calc();};box.append(row);});
+  saveOrder();}
+document.getElementById('clearOrder').onclick=()=>{order=[];renderLines();calc();};
+const sIn=document.getElementById('c-sku'),sList=document.getElementById('skuList');let sRes=[],sAct=-1;
+function showList(){sList.innerHTML='';
+  if(!sIn.value.trim()){sList.hidden=true;sIn.setAttribute('aria-expanded','false');return;}
+  if(!sRes.length)sList.innerHTML='<li class="none">No products match. Check the SKU, or add a custom item.</li>';
+  sRes.forEach((p,i)=>{const li=document.createElement('li');li.id='opt-'+i;li.setAttribute('role','option');li.setAttribute('aria-selected',i===sAct);
+    li.innerHTML=`<span class="sku">${esc(p.sku)}</span><span class="pr">${p.price?money(p.price):''}</span><span class="d">${esc(p.desc)}</span>`;
+    li.addEventListener('mousedown',e=>{e.preventDefault();addP(p);});sList.append(li);});
+  sList.hidden=false;sIn.setAttribute('aria-expanded','true');
+  if(sAct>=0)sIn.setAttribute('aria-activedescendant','opt-'+sAct);else sIn.removeAttribute('aria-activedescendant');}
+function addP(p){const ex=order.find(o=>o.p===p);if(ex)ex.qty++;else order.push({p,qty:1});sIn.value='';sRes=[];sAct=-1;showList();renderLines();calc();sIn.focus();}
+let sT;sIn.addEventListener('input',()=>{clearTimeout(sT);sT=setTimeout(()=>{sRes=searchP(sIn.value);sAct=sRes.length?0:-1;showList();},120);});
+sIn.addEventListener('keydown',e=>{
+  if(e.key==='ArrowDown'&&sRes.length){e.preventDefault();sAct=(sAct+1)%sRes.length;showList();}
+  else if(e.key==='ArrowUp'&&sRes.length){e.preventDefault();sAct=(sAct-1+sRes.length)%sRes.length;showList();}
+  else if(e.key==='Enter'){e.preventDefault();clearTimeout(sT);if(!sRes.length)sRes=searchP(sIn.value);if(sRes.length)addP(sRes[Math.max(sAct,0)]);}
+  else if(e.key==='Escape'){sIn.value='';sRes=[];showList();}});
+sIn.addEventListener('blur',()=>setTimeout(()=>{sList.hidden=true;sIn.setAttribute('aria-expanded','false');},150));
+const PRESETS=[['Bar set',150,15,12,9],['Roof platform',190,140,12,33],['Roof box',220,90,45,29],['Awning',250,20,20,24],['Small parts',30,20,15,3]];
+{const pr=document.getElementById('presets');PRESETS.forEach(([n,l,w,h,kg])=>{const b=document.createElement('button');b.type='button';b.textContent=n;b.onclick=()=>{
+  document.getElementById('c-l').value=l;document.getElementById('c-w').value=w;document.getElementById('c-h').value=h;document.getElementById('c-kg').value=kg;};pr.append(b);});}
+const numv=id=>{const v=parseFloat(document.getElementById(id).value);return isFinite(v)&&v>0?v:0;};
+document.getElementById('addCustom').onclick=()=>{const l=numv('c-l')/100,w=numv('c-w')/100,h=numv('c-h')/100,kg=numv('c-kg');
+  if(!(l&&w&&h)&&!kg)return;const pre=PRESETS.find(p=>p[1]/100===l&&p[2]/100===w&&p[3]/100===h&&p[4]===kg);
+  order.push({c:{name:pre?pre[0]+' (estimate)':'Custom item',l,w,h,kg},qty:1});renderLines();calc();};
+const med=a=>{const s=a.slice().sort((x,y)=>x-y),n=s.length;return n?(n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2):null;};
+const CLEAN=()=>MO.filter(o=>o.ninv===1&&o.nsh===1&&o.sz>0&&o.co>0&&o.ci>=0&&o.wi>=0&&o.p.zn<3);let CL=null;
+function similar(p,wi,ck,sz,longest){CL=CL||CLEAN();const z=Math.min(p.zn,2),local=WH[wi].st===p.wst,lb=longest>1.05;
+  const ckOf=o=>Math.max(o.kg,o.vol*250),zl=ZN[z][0].toLowerCase();
+  const base=o=>o.sz===sz+1&&(o.lg>1.05)===lb&&Math.min(o.p.zn,2)===z;
+  const tiers=[[o=>o.wi===wi&&o.p.wst===p.wst,`from ${WH[wi].name} to ${zl} ${p.wst}`],
+    [o=>o.wi===wi&&(WH[wi].st===o.p.wst)===local,`from ${WH[wi].name} to ${local?'same-state':'interstate'} ${zl} areas`],
+    [o=>(WH[o.wi].st===o.p.wst)===local,`from any warehouse to ${local?'same-state':'interstate'} ${zl} areas`]];
+  for(const [test,label] of tiers){
+    for(const w of [0.4,0.8,null]){const lo=w==null?0:ck*(1-w)-1,hi=w==null?1e9:ck*(1+w)+1;
+      const L=CL.filter(o=>base(o)&&test(o)&&ckOf(o)>=lo&&ckOf(o)<=hi);
+      if(L.length>=6){const by=new Map();L.forEach(o=>{if(!by.has(o.ci))by.set(o.ci,[]);by.get(o.ci).push(o.co);});
+        const STS=['NSW','VIC','QLD','WA','SA','TAS','ACT','NT','MEL','BNE','PER','ADL','SYD'],SM={MEL:'VIC',BNE:'QLD',PER:'WA',ADL:'SA',SYD:'NSW'};
+        const used=WHCARS[wi]||(WHCARS[wi]=new Set(ORD.filter(o=>o.wi===wi).map(o=>o.ci)));const fits=c=>used.has(c);
+        const cars=[...by.entries()].filter(([c,a])=>a.length>=2&&fits(c)).map(([c,a])=>({ci:c,name:tcase(CARS[c]),med:med(a),n:a.length,lo:Math.min(...a),hi:Math.max(...a)})).sort((a,b)=>a.med-b.med);
+        return {cars,n:L.length,label,lo:Math.max(0,lo),hi,anyW:w==null};}}}
+  return null;}
+let carPick=null,carKey='';const WHCARS={};
+document.getElementById('out').addEventListener('click',e=>{const o=e.target.closest('.opt');if(!o||o.disabled)return;carPick=+o.dataset.ci;calc();});
+function calc(){if(view!=='calc')return;
+  const out=document.getElementById('out');const d=resolveDest(document.getElementById('c-dest').value);
+  if(!d){out.innerHTML='<p class="msg">Enter a suburb or postcode to price a delivery.</p>';pin.xy=null;lineG.innerHTML='';draw();return;}
+  if(d.err){out.innerHTML=`<p class="msg w">${esc(d.err)}</p>`;pin.xy=null;lineG.innerHTML='';draw();return;}
+  const p=d.p,dst=p.wst,z=Math.min(p.zn,2);
+  const fromSel=document.getElementById('c-from').value,svc=document.getElementById('c-svc').value;
+  const frSt=fromFor(dst,fromSel),wi=whOf(frSt),w=WH[wi];
+  pin.xy=p.xy;pinT.textContent=d.name;lineG.innerHTML='';lineG.append(el('line',{class:'pinl',x1:w.xy[0],y1:w.xy[1],x2:p.xy[0],y2:p.xy[1]}));
+  {const b=svg.getBoundingClientRect(),x0=Math.min(w.xy[0],p.xy[0]),x1=Math.max(w.xy[0],p.xy[0]),y0=Math.min(w.xy[1],p.xy[1]),y1=Math.max(w.xy[1],p.xy[1]);
+   const kk=Math.min(base*12,Math.max(base,Math.min(b.width/((x1-x0)||1),b.height/((y1-y0)||1))*0.7));k=kk;tx=b.width/2-(x0+x1)/2*k;ty=b.height/2-(y0+y1)/2*k;}
+  draw();
+  const head=`<div class="dest"><b>${esc(d.name)}, ${p.st} ${p.pc}</b>${ZN[p.zn][0]} · ${dst} tab${dst!==p.st?' (border town)':''} · ships from ${esc(w.name)} (${w.st})${fromSel?'':', the website\'s first choice'} · ${Math.round(km(p,w)).toLocaleString()} km</div>`;
+  const its=order.map(o=>({...itemOf(o),qty:o.qty}));
+  if(!its.length){out.innerHTML=head+'<p class="msg">Add products to the order to see freight costs.</p>';return;}
+  if(p.wmiss||p.zn>2){out.innerHTML=head+`<p class="msg w">${p.wmiss?'This postcode isn\'t in the website\'s postcode list, so the website has no rate for it.':'This postcode has no Australia Post zone.'}</p>`;return;}
+  const cub=its.reduce((s,i)=>s+i.qty*i.l*i.w*i.h,0),kg=its.reduce((s,i)=>s+i.qty*(i.kg||0),0),ck=Math.max(kg,cub*250);
+  const longest=Math.max(0,...its.map(i=>Math.max(i.l,i.w,i.h)));
+  const wsc=its.map(i=>({i,...webScore(i)})).sort((a,b)=>b.s-a.s)[0],sz=wsc.s;
+  const std=priceOf(dst,frSt,'standard',sz,z),pri=priceOf(dst,frSt,'priority',sz,z),es=etaOf(dst,frSt,'standard',sz,z),ep=etaOf(dst,frSt,'priority',sz,z);
+  const charge=svc==='priority'?pri:std;
+  const lb2=longest>1.05;const big=its.find(i=>Math.max(i.l,i.w,i.h)>1.05||(i.kg||0)>22||i.l*i.w*i.h>0.25);
+  const sim=similar(p,wi,ck,sz,longest);
+  const cars=sim?sim.cars.map(c=>({...c,off:/AUSTRALIA POST/i.test(CARS[c.ci])&&big?`Not suitable: ${esc(big.name)} is ${Math.max(big.l,big.w,big.h).toFixed(2)} m, ${big.kg||0} kg (Australia Post takes up to 1.05 m, 22 kg, 0.25 m³)`:null})):[];
+  const avail=cars.filter(c=>!c.off);
+  const key=[p.pc,wi,sz,lb2,Math.round(ck)].join('|');if(key!==carKey){carKey=key;carPick=null;}
+  if(carPick==null||!avail.some(c=>c.ci===carPick))carPick=avail.length?avail[0].ci:null;
+  const chosen=avail.find(c=>c.ci===carPick);
+  const value=its.reduce((s,i)=>s+i.qty*i.price,0),pcost=its.reduce((s,i)=>s+i.qty*i.buy,0),missing=its.filter(i=>!(i.l&&i.w&&i.h)).length;
+  let msg='';
+  if(chosen&&charge!=null){const gap=charge-chosen.med;
+    msg=gap>=0?`<p class="msg g">The website's ${svc} charge of ${money(charge)} covers ${esc(chosen.name)}'s typical ${money(chosen.med)} with ${money(gap)} to spare.</p>`
+      :`<p class="msg w">The website's ${svc} charge of ${money(charge)} is ${money(-gap)} short of ${esc(chosen.name)}'s typical ${money(chosen.med)}.</p>`;}
+  let marg='';
+  if(value>0&&chosen){const pre=value/1.1-pcost,after=pre+(charge||0)/1.1-chosen.med/1.1;
+    marg=`<dl class="kv"><dt>Order value (incl. GST)</dt><dd>${money(value)}</dd><dt>Product cost (ex GST)</dt><dd>${money(pcost)}</dd><dt>Margin before freight (ex GST)</dt><dd>${pre<0?'−':''}${money(Math.abs(pre))}</dd><div class="sep"></div><dt>Margin after the ${svc} charge and ${esc(chosen.name)}</dt><dd class="${after>=0?'g':'w'}" style="font-weight:600">${after<0?'−':''}${money(Math.abs(after))}</dd></dl>`;}
+  out.innerHTML=head+`
+   <div class="webp"><div class="${svc==='standard'?'on':''}"><span>Website Standard · ${SZ[sz]}</span><b>${std==null?'–':money(std)}</b><span>${esc(es||'')}</span></div>
+     <div class="${svc==='priority'?'on':''}"><span>Website Priority · ${SZ[sz]}</span><b>${pri==null?'blank':money(pri)}</b><span>${esc(ep||'')}</span></div></div>
+   <h2 style="font-size:16px;margin:0">What orders like this have cost us</h2>
+   ${sim?`<div class="opts" role="radiogroup" aria-label="Carrier">${cars.map(c=>`<button type="button" class="opt" role="radio" data-ci="${c.ci}" aria-checked="${chosen&&c.ci===chosen.ci}"${c.off?' disabled':''}><span class="pick"><i class="dot"></i>${esc(c.name)}${avail[0]&&c.ci===avail[0].ci?'<em class="tag">Cheapest</em>':''}</span><b>${c.off?'Not suitable':money(c.med)}</b><small>${c.off||`median of ${c.n} shipments · ${money0(c.lo)}–${money0(c.hi)}`}</small></button>`).join('')}</div>
+     <p class="note" style="margin:0">Based on ${sim.n} past ${SZ[sz]} orders ${lb2?'with an item over 1.05 m':'with everything under 1.05 m'}, ${esc(sim.label)}${sim.anyW?'':`, ${Math.round(sim.lo)}–${Math.round(sim.hi)} kg chargeable`}, each sent as one shipment. Prices include GST.</p>`
+     :'<p class="msg">Not enough past shipments like this to estimate a cost.</p>'}
+   ${msg}
+   <dl class="kv"><dt>Items</dt><dd>${its.reduce((s,i)=>s+i.qty,0)}</dd><dt>Total cubic · weight</dt><dd>${cub.toFixed(3)} m³ · ${Math.round(kg*10)/10} kg</dd><dt>Chargeable weight</dt><dd>${Math.round(ck*10)/10} kg${cub*250>kg?' (by cubic)':''}</dd><dt>Longest item</dt><dd>${longest.toFixed(2)} m</dd><dt>Size on your website</dt><dd>${SZ[sz]} (${esc(wsc.i.name)}, by ${wsc.by})</dd></dl>
+   ${marg}${missing?`<p class="msg w">${missing} item${missing>1?'s have':' has'} no dimensions in your product list, so the website sizes ${missing>1?'them':'it'} by weight only.</p>`:''}`;}
+let cT;document.getElementById('c-dest').addEventListener('input',()=>{clearTimeout(cT);cT=setTimeout(calc,250);});
+document.getElementById('c-from').addEventListener('change',calc);document.getElementById('c-svc').addEventListener('change',calc);
+document.getElementById('calc').addEventListener('submit',e=>{e.preventDefault();calc();});
+renderLines();
 /* search + pick */
 let sel=null;
 function pick(p){if(sel)sel.el.classList.remove('sel');sel=p;p.el.classList.add('sel');dg.append(p.el);
@@ -533,5 +760,5 @@ function flyWh(w){const b=svg.getBoundingClientRect();k=base*10;tx=b.width/2-w.x
    grip.addEventListener('pointermove',mv);grip.addEventListener('pointerup',up);});
  grip.addEventListener('dblclick',()=>{setW(null);try{localStorage.removeItem('auSide');}catch(e){}fit();});
  grip.addEventListener('keydown',e=>{const s=e.shiftKey?80:20;let w=null;if(e.key==='ArrowLeft')w=cur()+s;else if(e.key==='ArrowRight')w=cur()-s;else if(e.key==='Home'){setW(null);try{localStorage.removeItem('auSide');}catch(x){}fit();return;}else return;e.preventDefault();setW(w);fit();save();});}
-buildChips();setView(view);fit();
+buildChips();setView(view);fit();if(view==='calc')calc();
 </script>
