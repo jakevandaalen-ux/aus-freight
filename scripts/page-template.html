@@ -67,6 +67,16 @@ input[type=search]{width:100%;padding:10px 12px;border:1px solid var(--line);bor
 .toggle{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
 .toggle button{flex:1;padding:7px;border:0;background:transparent;color:var(--ink);font:500 14px var(--body);cursor:pointer}
 .toggle button[aria-pressed=true]{background:var(--ink);color:var(--panel)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line)}
+.tabs button{padding:8px 12px;border:0;border-bottom:3px solid transparent;background:transparent;color:var(--muted);font:600 15px var(--body);cursor:pointer;margin-bottom:-1px}
+.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--wh)}
+.sect{display:flex;flex-direction:column;gap:18px}
+.ofilt{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ofilt select{padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--land);color:var(--ink);font:inherit;font-size:14px;min-width:0}
+ol.top{list-style:none;margin:0;padding:0}
+ol.top li{display:grid;grid-template-columns:48px minmax(0,1fr) auto auto;gap:10px;padding:6px 0;border-bottom:1px solid var(--line);cursor:pointer;font-size:14px;font-variant-numeric:tabular-nums}
+ol.top li:hover{background:var(--soft)}
+ol.top .m{color:var(--muted)}
 .chip{display:flex;align-items:center;gap:7px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--ink);font:500 13px var(--body);cursor:pointer}
 .chip i{width:10px;height:10px;border-radius:50%;flex:none}
 .chip b{font-weight:600;font-variant-numeric:tabular-nums;color:var(--muted)}
@@ -104,15 +114,49 @@ th:first-child,td:first-child{text-align:left}
     <div class="panel">
       <div style="display:flex;flex-direction:column;gap:8px">
         <h1>Where the freight goes · Australia</h1>
-        <p class="sub">Every Australian delivery postcode, coloured by Australia Post's Metro, Outer Metro and Regional zones, with our seven warehouses. Switch to remoteness to see where carriers add remote surcharges.</p>
+        <p class="sub">Our Australian deliveries from the seven state warehouses, on Australia Post's Metro, Outer Metro and Regional zones.</p>
       </div>
+      <div class="tabs" role="tablist" aria-label="View">
+        <button role="tab" id="t-del" aria-selected="true" aria-controls="p-del">Deliveries</button>
+        <button role="tab" id="t-pc" aria-selected="false" aria-controls="p-pc">Postcodes</button>
+      </div>
+      <input type="search" id="q" placeholder="Find a postcode or suburb, e.g. 4870 or Cairns" aria-label="Find a postcode or suburb">
+      <div class="card" id="pick" hidden></div>
+      <section id="p-del" role="tabpanel" aria-labelledby="t-del" class="sect">
+        <div class="stats">
+          <div><b id="d-con">–</b><span>consignments</span></div>
+          <div><b id="d-pc">–</b><span>postcodes</span></div>
+          <div><b id="d-cost">–</b><span>freight cost incl. GST</span></div>
+          <div><b id="d-avg">–</b><span>average per consignment</span></div>
+        </div>
+        <div class="ofilt">
+          <select id="f-wh" aria-label="Warehouse"><option value="">All warehouses</option></select>
+          <select id="f-car" aria-label="Carrier"><option value="">All carriers</option></select>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <h2>By Australia Post zone</h2>
+          <div style="overflow-x:auto"><table id="t-zone"><thead><tr><th>Zone</th><th>Consignments</th><th>Share</th><th>Avg cost</th><th>Total cost</th></tr></thead><tbody></tbody></table></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <h2>By warehouse</h2>
+          <div style="overflow-x:auto"><table id="t-wh"><thead><tr><th>Warehouse</th><th>Consignments</th><th>Avg cost</th><th>Total cost</th></tr></thead><tbody></tbody></table></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <h2>By carrier</h2>
+          <div style="overflow-x:auto"><table id="t-car"><thead><tr><th>Carrier</th><th>Consignments</th><th>Avg cost</th><th>Total cost</th></tr></thead><tbody></tbody></table></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <h2>Busiest postcodes</h2>
+          <ol class="top" id="top"></ol>
+        </div>
+        <p class="note">From the carrier export: <span id="d-range"></span>. Cost is the invoiced cost where billed, otherwise the carrier's estimate, plus 10% GST. Bigger dots mean more consignments; colour is the Australia Post zone. Customer names are not included.</p>
+      </section>
+      <section id="p-pc" role="tabpanel" aria-labelledby="t-pc" class="sect" hidden>
       <div class="stats">
         <div><b id="s-pc">–</b><span>postcodes shown</span></div>
         <div><b id="s-loc">–</b><span>suburbs and towns</span></div>
         <div><b id="s-wh">7</b><span>warehouses</span></div>
       </div>
-      <input type="search" id="q" placeholder="Find a postcode or suburb, e.g. 4870 or Cairns" aria-label="Find a postcode or suburb">
-      <div class="card" id="pick" hidden></div>
       <div style="display:flex;flex-direction:column;gap:8px">
         <h2>Our warehouses</h2>
         <div class="whlist" id="whlist"></div>
@@ -127,8 +171,8 @@ th:first-child,td:first-child{text-align:left}
         <h2>Postcodes by state</h2>
         <div style="overflow-x:auto"><table id="bystate"><thead><tr><th>State</th><th>Postcodes</th><th>Metro</th><th>Outer metro</th><th>Regional</th><th>Remote (ABS)</th></tr></thead><tbody></tbody></table></div>
       </div>
-      <div class="next"><p><b>Next:</b> add your Australian orders to put real deliveries on the map, then the courier rate cards to build the calculator and recommended charges, as for New Zealand.</p></div>
       <p class="note">Australia Post zones come from Australia Post's <a href="https://auspost.com.au/content/dam/auspost_corp/media/documents/mpb-zone-1-coverage.pdf" target="_blank" rel="noopener">MyPost Business postcode list</a>: <b>Metro</b> = Capital City (the eight capitals), <b>Outer metro</b> = Major Areas (e.g. Gold Coast, Newcastle, Geelong, Launceston), <b>Regional</b> = Rural (each state's "Outer" postcodes), plus Remote Islands &amp; Locations. Australia Post notes that TAS Other postcodes don't get Zone 1 pricing. Postcode locations and remoteness (ABS Remoteness Areas 2021) come from the <a href="https://github.com/matthewproctor/australianpostcodes" target="_blank" rel="noopener">Australian Postcodes dataset</a>; each dot sits at the average position of the postcode's suburbs, PO-box and business-only postcodes (rings) are placed at their post office. Remote islands and the Antarctic postcode are drawn in dashed boxes at the map's edge, out of their true position. Australia Post's ranges also include about 800 numbers that aren't real postcodes; those can't be shown. State outlines are simplified from Natural Earth via world-geojson. The ACT sits inside the NSW outline. Warehouses are placed at their suburb's centre, and "postcodes" beside each one counts the postcodes it is closest to in a straight line (road distance will differ).</p>
+      </section>
     </div>
   </aside>
 </div>
@@ -138,6 +182,8 @@ th:first-child,td:first-child{text-align:left}
 const STATES=__STATES__;
 const WH=__WH__.map(([st,name,addr,pc,lat,lon])=>({st,name,addr,pc,lat,lon}));
 const PC=__PC__.map(([pc,lat,lon,st,ra,names,n,z,area,kind])=>({pc,lat,lon,st,ra,names,n,zn:z<0?4:z,area,kind}));
+const OD=__ORD__,CARS=OD.CARS;
+let view='del';
 // remote postcodes drawn in boxes at the map's edge, out of their true position
 const INSET={'2898':[156.6,-31.2,'Lord Howe Is.'],'2899':[156.6,-28.9,'Norfolk Is.'],'6798':[109.8,-12.0,'Christmas Is.'],'6799':[109.8,-14.4,'Cocos (Keeling) Is.'],'7151':[150.6,-44.6,'Antarctic & Macquarie Is.']};
 // Australia Post MyPost Business postcode groups
@@ -169,7 +215,7 @@ const PCtmp=0;const ig=el('g',{class:'inset'});sg.after(ig);
 PC.forEach(p=>{const ins=INSET[p.pc];p.xy=ins?proj(ins[0],ins[1]):proj(p.lon,p.lat);
   if(ins){const gg=el('g',{});gg.append(el('rect',{x:-20,y:-20,width:40,height:40,rx:6}));const tx=el('text',{x:26,y:4});tx.textContent=ins[2];gg.append(tx);ig.append(gg);p.inset=ins[2];p.ig=gg;}
   const c=el('circle',{cx:p.xy[0],cy:p.xy[1],class:'pc'+(p.kind!=='D'?' po':'')});p.el=c;dg.append(c);
-  c.addEventListener('pointerenter',e=>showTip(`<b>${p.pc}</b> · ${p.st}${p.kind!=='D'?' · PO boxes / business only':''}${p.inset?' · shown out of position':''}<br>${esc(p.names)}${p.n>4?` <span class="m">+${p.n-4} more</span>`:''}<br><span class="m">${ZN[p.zn][0]}${p.area&&p.zn<3?` (${esc(p.area)})`:''} · ${raName(p.ra)}<br>${Math.round(p.nw.d).toLocaleString()} km from ${esc(p.nw.w.name)}</span>`,e));
+  c.addEventListener('pointerenter',e=>showTip(`<b>${p.pc}</b> · ${p.st}${p.kind!=='D'?' · PO boxes / business only':''}${p.inset?' · shown out of position':''}<br>${esc(p.names)}${p.n>4?` <span class="m">+${p.n-4} more</span>`:''}<br><span class="m">${ZN[p.zn][0]}${p.area&&p.zn<3?` (${esc(p.area)})`:''} · ${raName(p.ra)}<br>${Math.round(p.nw.d).toLocaleString()} km from ${esc(p.nw.w.name)}</span>${view==='del'&&p.dn?`<br><b>${p.dn} consignment${p.dn>1?'s':''}</b> · avg ${money(p.dc/p.dn)}`:''}`,e));
   c.addEventListener('pointermove',moveTip);c.addEventListener('pointerleave',()=>tip.hidden=true);
   c.addEventListener('click',()=>pick(p));});
 const STAR='M0,-9L2.6,-3.3L8.6,-2.8L4,1.2L5.3,7.3L0,4.2L-5.3,7.3L-4,1.2L-8.6,-2.8L-2.6,-3.3Z';
@@ -187,7 +233,7 @@ WH.forEach(w=>{w.xy=proj(w.lon,w.lat);const grp=el('g',{class:'wh'});grp.append(
 let k=1,tx=0,ty=0,base=1;
 const X0=(108.6-112)*kx*100,W=(162-112)*kx*100-X0,H=(46.5-9.5)*100;   // room either side for the remote-island boxes and warehouse labels
 function draw(){const z=k/base,f=Math.pow(z,0.4);
-  PC.forEach(p=>p.el.setAttribute('r',(p.el.classList.contains('sel')?6:3.1)*f/k));
+  PC.forEach(p=>{const s=p.el.classList.contains('sel');const r=view==='del'?(2.2+Math.sqrt(p.dn||0)*1.5)+(s?2:0):(s?6:3.1);p.el.setAttribute('r',r*f/k);});
   const tr=xy=>`translate(${xy[0]},${xy[1]}) scale(${1/k})`;
   cities.forEach(c=>c.grp.setAttribute('transform',tr(c.xy)));WH.forEach(w=>w.grp.setAttribute('transform',tr(w.xy)));PC.forEach(p=>{if(p.ig)p.ig.setAttribute('transform',tr(p.xy));});labels.forEach(l=>l.t.setAttribute('transform',`translate(${l.xy[0]},${l.xy[1]}) scale(${1/k})`));
   svg.classList.toggle('minor-off',z<1.8);   // cities in the crowded south-east appear once zoomed in
@@ -215,11 +261,12 @@ function buildChips(){on=classes().map(()=>true);raBox.innerHTML='';
   classes().forEach((nm,i)=>{const b=document.createElement('button');b.type='button';b.className='chip';b.setAttribute('aria-pressed','true');
     b.innerHTML=`<i style="background:var(${varOf(i)})"></i>${nm} <b>${PC.filter(p=>clsOf(p)===i).length.toLocaleString()}</b>`;
     b.onclick=()=>{on[i]=!on[i];if(!on.some(Boolean))on[i]=true;apply();};raBox.append(b);});
-  PC.forEach(p=>{const v=`var(${varOf(clsOf(p))})`;p.el.style.fill=v;if(p.kind!=='D')p.el.style.stroke=v;});
+  recolour();
   document.getElementById('m-zone').setAttribute('aria-pressed',mode==='zone');document.getElementById('m-ra').setAttribute('aria-pressed',mode==='ra');}
-function apply(){[...raBox.children].forEach((b,i)=>b.setAttribute('aria-pressed',on[i]));
+function recolour(){PC.forEach(p=>{const v=view==='del'?`var(${ZN[p.zn][1]})`:`var(${varOf(clsOf(p))})`;p.el.style.fill=v;if(p.kind!=='D')p.el.style.stroke=v;});}
+function apply(){if(view==='del'){applyDel();return;}[...raBox.children].forEach((b,i)=>b.setAttribute('aria-pressed',on[i]));
   const po=document.getElementById('showpo').checked,ok=p=>on[clsOf(p)]&&(po||p.kind==='D');
-  const vis=PC.filter(ok);PC.forEach(p=>p.el.style.display=ok(p)?'':'none');
+  const vis=PC.filter(ok);PC.forEach(p=>{p.el.style.display=ok(p)?'':'none';if(p.ig)p.ig.style.display=ok(p)?'':'none';});
   document.getElementById('s-pc').textContent=vis.length.toLocaleString();
   document.getElementById('s-loc').textContent=vis.reduce((s,p)=>s+p.n,0).toLocaleString();}
 const setMode=m=>{mode=m;try{localStorage.setItem('auMode',m);}catch(e){}buildChips();apply();};
@@ -227,16 +274,52 @@ document.getElementById('showpo').onchange=apply;document.getElementById('pocoun
 document.getElementById('m-zone').onclick=()=>setMode('zone');document.getElementById('m-ra').onclick=()=>setMode('ra');
 {const tb=document.querySelector('#bystate tbody');const S={};PC.forEach(p=>{const s=S[p.st]||(S[p.st]=[0,0,0,0,0]);s[0]++;if(p.zn<3)s[1+p.zn]++;if(p.ra>=3)s[4]++;});
   Object.entries(S).sort((a,b)=>b[1][0]-a[1][0]).forEach(([st,v])=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${st}</td>${v.map(x=>`<td>${x}</td>`).join('')}`;tb.append(tr);});}
+/* deliveries */
+const money=v=>'$'+(Math.round(v*100)/100).toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2});
+const money0=v=>'$'+Math.round(v).toLocaleString('en-AU');
+const tcase=s=>s.replace(/\b\w+/g,w=>w.length<=3&&w===w.toUpperCase()&&/^(TNT|PEP|WA|VIC|QLD)$/.test(w)?w:w[0]+w.slice(1).toLowerCase());
+const ORD=OD.O.map(([pi,wi,ci,cost,kg,vol,date,res,svc,ref])=>({p:PC[pi],wi,ci,cost:cost*1.1,kg,vol,date,res,svc,ref}));
+{const dates=ORD.map(o=>o.date).filter(Boolean).sort();const f=d=>new Date(d+'T00:00:00').toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'});
+ document.getElementById('d-range').textContent=`${ORD.length.toLocaleString()} consignments despatched ${f(dates[0])} – ${f(dates.at(-1))}`;
+ const fw=document.getElementById('f-wh');WH.forEach((w,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`${w.st} · ${w.name}`;fw.append(o);});
+ const o2=document.createElement('option');o2.value='-1';o2.textContent='Other senders';fw.append(o2);
+ const fc=document.getElementById('f-car');CARS.forEach((c,i)=>{if(!ORD.some(o=>o.ci===i))return;const o=document.createElement('option');o.value=i;o.textContent=tcase(c);fc.append(o);});
+ fw.onchange=fc.onchange=()=>applyDel();}
+function applyDel(){
+  const fw=document.getElementById('f-wh').value,fc=document.getElementById('f-car').value;
+  const L=ORD.filter(o=>(fw===''||o.wi===+fw)&&(fc===''||o.ci===+fc));
+  PC.forEach(p=>{p.dn=0;p.dc=0;});L.forEach(o=>{o.p.dn++;o.p.dc+=o.cost;});
+  PC.forEach(p=>{p.el.style.display=p.dn?'':'none';if(p.ig)p.ig.style.display=p.dn?'':'none';});
+  const tot=L.reduce((s,o)=>s+o.cost,0),pcs=PC.filter(p=>p.dn);
+  document.getElementById('d-con').textContent=L.length.toLocaleString();document.getElementById('d-pc').textContent=pcs.length.toLocaleString();
+  document.getElementById('d-cost').textContent=money0(tot);document.getElementById('d-avg').textContent=L.length?money(tot/L.length):'–';
+  const group=(key,label,sortByCount=true)=>{const m=new Map();L.forEach(o=>{const k=key(o);const g=m.get(k)||{n:0,c:0};g.n++;g.c+=o.cost;m.set(k,g);});return [...m.entries()].sort((a,b)=>b[1].n-a[1].n).map(([k,g])=>[label(k),g]);};
+  const fill=(id,rows,share)=>{const tb=document.querySelector(`#${id} tbody`);tb.innerHTML='';rows.forEach(([nm,g])=>{const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${nm}</td><td>${g.n.toLocaleString()}</td>${share?`<td>${Math.round(g.n/L.length*100)}%</td>`:''}<td>${money(g.c/g.n)}</td><td>${money0(g.c)}</td>`;tb.append(tr);});};
+  const zr=group(o=>o.p.zn,k=>`<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(${ZN[k][1]});margin-right:6px"></span>${ZN[k][0]}`);
+  zr.sort((a,b)=>ZN.findIndex(z=>a[0].endsWith(z[0]))-ZN.findIndex(z=>b[0].endsWith(z[0])));fill('t-zone',zr,true);
+  fill('t-wh',group(o=>o.wi,k=>k<0?'Other senders':`${WH[k].st} · ${esc(WH[k].name)}`));
+  fill('t-car',group(o=>o.ci,k=>esc(tcase(CARS[k]))));
+  const top=document.getElementById('top');top.innerHTML='';
+  pcs.sort((a,b)=>b.dn-a.dn).slice(0,12).forEach(p=>{const li=document.createElement('li');li.tabIndex=0;
+    li.innerHTML=`<b>${p.pc}</b><span>${esc(p.names.split(', ')[0])} <span class="m">${p.st}</span></span><span class="m">avg ${money(p.dc/p.dn)}</span><span>${p.dn}</span>`;
+    li.onclick=()=>flyTo(p);li.onkeydown=e=>{if(e.key==='Enter')flyTo(p);};top.append(li);});
+  draw();}
+function setView(v){view=v;document.getElementById('t-del').setAttribute('aria-selected',v==='del');document.getElementById('t-pc').setAttribute('aria-selected',v==='pc');
+  document.getElementById('p-del').hidden=v!=='del';document.getElementById('p-pc').hidden=v!=='pc';
+  try{localStorage.setItem('auView',v);}catch(e){}recolour();apply();draw();}
+document.getElementById('t-del').onclick=()=>setView('del');document.getElementById('t-pc').onclick=()=>setView('pc');
+try{const v=localStorage.getItem('auView');if(v==='pc')view='pc';}catch(e){}
 /* search + pick */
 let sel=null;
 function pick(p){if(sel)sel.el.classList.remove('sel');sel=p;p.el.classList.add('sel');dg.append(p.el);
   const c=document.getElementById('pick');c.hidden=false;
   c.innerHTML=`<div class="pcnum">${p.pc}</div><div>${esc(p.names)}${p.n>4?` <span class="note">+${p.n-4} more</span>`:''}</div>
-   <dl class="kv"><dt>State</dt><dd>${p.st}</dd><dt>Australia Post zone</dt><dd><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(${ZN[p.zn][1]});margin-right:6px"></span>${ZN[p.zn][0]} · ${ZN[p.zn][2]}${p.area&&p.zn<3?`: ${esc(p.area)}`:''}${p.inset?` (${esc(p.inset)}, shown out of position)`:''}</dd><dt>Remoteness</dt><dd><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(${raVar(p.ra)});margin-right:6px"></span>${raName(p.ra)}</dd><dt>Suburbs and towns</dt><dd>${p.n}</dd><dt>Nearest warehouse</dt><dd>${esc(p.nw.w.name)} (${esc(p.nw.w.st)}), ${Math.round(p.nw.d).toLocaleString()} km in a straight line</dd></dl>`;
+   <dl class="kv"><dt>State</dt><dd>${p.st}</dd><dt>Australia Post zone</dt><dd><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(${ZN[p.zn][1]});margin-right:6px"></span>${ZN[p.zn][0]} · ${ZN[p.zn][2]}${p.area&&p.zn<3?`: ${esc(p.area)}`:''}${p.inset?` (${esc(p.inset)}, shown out of position)`:''}</dd><dt>Remoteness</dt><dd><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(${raVar(p.ra)});margin-right:6px"></span>${raName(p.ra)}</dd><dt>Suburbs and towns</dt><dd>${p.n}</dd><dt>Nearest warehouse</dt><dd>${esc(p.nw.w.name)} (${esc(p.nw.w.st)}), ${Math.round(p.nw.d).toLocaleString()} km in a straight line</dd>${p.dn?`<dt>Consignments</dt><dd>${p.dn} · avg ${money(p.dc/p.dn)} incl. GST</dd>`:''}</dl>`;
   draw();}
 function flyTo(p){const b=svg.getBoundingClientRect();k=base*8;tx=b.width/2-p.xy[0]*k;ty=b.height/2-p.xy[1]*k;pick(p);}
 document.getElementById('q').addEventListener('keydown',e=>{if(e.key!=='Enter')return;const v=e.target.value.trim().toLowerCase();if(!v)return;
-  const p=PC.find(p=>p.pc===v.padStart(4,'0'))||PC.find(p=>p.names.toLowerCase().split(', ').includes(v))||PC.find(p=>p.names.toLowerCase().includes(v));
+  const p=PC.find(p=>p.pc===v.padStart(4,'0')&&(view!=='del'||p.dn))||PC.find(p=>p.pc===v.padStart(4,'0'))||PC.find(p=>p.names.toLowerCase().split(', ').includes(v))||PC.find(p=>p.names.toLowerCase().includes(v));
   if(p)flyTo(p);else{e.target.setCustomValidity('No Australian postcode or suburb by that name');e.target.reportValidity();setTimeout(()=>e.target.setCustomValidity(''),1800);}});
 function flyWh(w){const b=svg.getBoundingClientRect();k=base*10;tx=b.width/2-w.xy[0]*k;ty=b.height/2-w.xy[1]*k;draw();}
 {const L=document.getElementById('whlist');WH.slice().sort((a,b)=>a.st.localeCompare(b.st)).forEach(w=>{const b=document.createElement('button');b.type='button';
@@ -251,5 +334,5 @@ function flyWh(w){const b=svg.getBoundingClientRect();k=base*10;tx=b.width/2-w.x
    const up=ev=>{grip.releasePointerCapture(e.pointerId);grip.removeEventListener('pointermove',mv);grip.removeEventListener('pointerup',up);try{localStorage.setItem('auSide',String(innerWidth-ev.clientX));}catch(x){}};
    grip.addEventListener('pointermove',mv);grip.addEventListener('pointerup',up);});
  grip.addEventListener('dblclick',()=>{setW(null);try{localStorage.removeItem('auSide');}catch(e){}fit();});}
-buildChips();apply();fit();
+buildChips();setView(view);fit();
 </script>
