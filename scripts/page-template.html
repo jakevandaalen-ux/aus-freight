@@ -6,7 +6,7 @@
 /* Layout: full-height map of Australia on the left, a working panel on the right (stacks below the map on phones). Same family as the NZ Freight map. */
 :root{
   --sea:#d6e4ea; --land:#fbfaf6; --coast:#7f9cab; --border:#b9cbd3; --ink:#16323f; --muted:#5a7380;
-  --panel:#ffffff; --line:#c9d8df; --soft:#eef4f6; --hi:#ffb400; --wh:#c0265e; --good:#16805a; --bad:#b4471a;
+  --panel:#ffffff; --line:#c9d8df; --soft:#eef4f6; --hi:#ffb400; --wh:#c0265e; --c1:#9ccfae; --c2:#5bb391; --c3:#2f8f86; --c4:#2b6f8a; --c5:#3d4f93; --c6:#5f3489; --c7:#82195a; --good:#16805a; --bad:#b4471a;
   --z0:#1d5f86; --z1:#3aa38f; --z2:#d39b2a; --z3:#a32c1c;
   --ra0:#1d5f86; --ra1:#3f8fa8; --ra2:#d39b2a; --ra3:#c8641f; --ra4:#a32c1c; --ra-x:#8d9aa1;
   --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
@@ -14,12 +14,12 @@
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
   --sea:#0f2530; --land:#22343c; --coast:#4c6d7c; --border:#3b5664; --ink:#e7eff2; --muted:#9db3bd;
-  --panel:#162b35; --line:#2c4552; --soft:#1c3440; --hi:#ffc93c; --wh:#ff5c8f; --good:#4fd29a; --bad:#ff9a6b;
+  --panel:#162b35; --line:#2c4552; --soft:#1c3440; --hi:#ffc93c; --wh:#ff5c8f; --c1:#3f7d66; --c2:#4fa088; --c3:#5ec2b4; --c4:#73afe3; --c5:#9d90f2; --c6:#d38ef0; --c7:#ff92c3; --good:#4fd29a; --bad:#ff9a6b;
   --z0:#5db3e0; --z1:#6fd6bd; --z2:#f0c25a; --z3:#ff6a55;
   --ra0:#5db3e0; --ra1:#7fd0d8; --ra2:#f0c25a; --ra3:#f08a4b; --ra4:#ff6a55; --ra-x:#7d8b92; color-scheme:dark } }
 :root[data-theme="dark"]{
   --sea:#0f2530; --land:#22343c; --coast:#4c6d7c; --border:#3b5664; --ink:#e7eff2; --muted:#9db3bd;
-  --panel:#162b35; --line:#2c4552; --soft:#1c3440; --hi:#ffc93c; --wh:#ff5c8f; --good:#4fd29a; --bad:#ff9a6b;
+  --panel:#162b35; --line:#2c4552; --soft:#1c3440; --hi:#ffc93c; --wh:#ff5c8f; --c1:#3f7d66; --c2:#4fa088; --c3:#5ec2b4; --c4:#73afe3; --c5:#9d90f2; --c6:#d38ef0; --c7:#ff92c3; --good:#4fd29a; --bad:#ff9a6b;
   --z0:#5db3e0; --z1:#6fd6bd; --z2:#f0c25a; --z3:#ff6a55;
   --ra0:#5db3e0; --ra1:#7fd0d8; --ra2:#f0c25a; --ra3:#f08a4b; --ra4:#ff6a55; --ra-x:#7d8b92; color-scheme:dark }
 *{box-sizing:border-box}
@@ -97,6 +97,22 @@ input[type=search]{width:100%;padding:10px 12px;border:1px solid var(--line);bor
 #otab td .s{display:block;font-size:11.5px;color:var(--muted);max-width:200px;overflow:hidden;text-overflow:ellipsis}
 td.w,td.g{font-weight:600}
 .linkbtn{background:none;border:0;color:var(--ink);text-decoration:underline;font:inherit;cursor:pointer;padding:0;align-self:flex-start}
+.seg{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.seg button{flex:1;padding:8px 6px;border:0;background:var(--land);color:var(--ink);font:500 14px var(--body);cursor:pointer;border-left:1px solid var(--line)}
+.seg button:first-child{border-left:0}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--panel);font-weight:600}
+.seg button:focus-visible{outline:2px solid var(--hi);outline-offset:-2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12.5px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
+#r-tab td small{display:block;font-size:11px;color:var(--muted)}
+#r-tab td.na{color:var(--muted)}
+.flags{display:flex;flex-direction:column;gap:8px}
+.flag{border-left:3px solid var(--bad);padding:6px 10px;font-size:13.5px;background:var(--soft);border-radius:0 6px 6px 0}
+.flag b{display:block}
+.ptab{width:100%;font-size:13px;margin-top:4px}
+.ptab td,.ptab th{padding:4px 6px 4px 0}
+.ptab td small{color:var(--muted);font-size:11px}
 .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line)}
 .tabs button{padding:8px 12px;border:0;border-bottom:3px solid transparent;background:transparent;color:var(--muted);font:600 15px var(--body);cursor:pointer;margin-bottom:-1px}
 .tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--wh)}
@@ -149,6 +165,7 @@ th:first-child,td:first-child{text-align:left}
       <div class="tabs" role="tablist" aria-label="View">
         <button role="tab" id="t-del" aria-selected="true" aria-controls="p-del">Deliveries</button>
         <button role="tab" id="t-ord" aria-selected="false" aria-controls="p-ord">Orders</button>
+        <button role="tab" id="t-rate" aria-selected="false" aria-controls="p-rate">Charges</button>
         <button role="tab" id="t-pc" aria-selected="false" aria-controls="p-pc">Postcodes</button>
       </div>
       <input type="search" id="q" placeholder="Find a postcode or suburb, e.g. 4870 or Cairns" aria-label="Find a postcode or suburb">
@@ -204,6 +221,21 @@ th:first-child,td:first-child{text-align:left}
         <button type="button" class="linkbtn" id="o-more" hidden>Show more</button>
         <p class="note">Matched by customer name across the three reports ("3 of 3" in column F): <span id="o-cnt"></span>. A customer with several orders in the period counts as one row, with their charges and shipments added together. "Cost us" uses the invoiced cost where the carrier has billed it and the carrier's estimate where it hasn't yet (the match file's own summary counts unbilled shipments as $0), plus 10% GST. "We charged" is the freight charged on the invoices. Click an order to find it on the map. Customer names, emails and phone numbers are not included.</p>
       </section>
+      <section id="p-rate" role="tabpanel" aria-labelledby="t-rate" class="sect" hidden>
+        <p class="sub" style="margin:0">What the website charges customers for freight, from the October 2025 shipping sheet. Pick a product size and service; the map colours every postcode by the price a customer sees.</p>
+        <div class="seg" role="group" aria-label="Freight size" id="r-size"></div>
+        <div class="ofilt3" style="grid-template-columns:1fr 1.6fr">
+          <div class="seg" role="group" aria-label="Service" id="r-svc"></div>
+          <select id="r-from" aria-label="Ship from"><option value="">Ships from the website's first-choice warehouse</option></select>
+        </div>
+        <div class="legend" id="r-leg"></div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <h2 id="r-h">What a customer pays</h2>
+          <div style="overflow-x:auto"><table id="r-tab"><thead><tr><th>Delivering to</th><th>From</th><th>Metro</th><th>Outer metro</th><th>Regional</th></tr></thead><tbody></tbody></table></div>
+        </div>
+        <div class="flags" id="r-flags"></div>
+        <p class="note">Prices include GST and are per order, as set in each state's tab of the shipping sheet ("Freight Charges for … Orders"). The destination tab follows the website's postcode list, so a few border towns use the neighbouring state's tab (Queanbeyan uses ACT, Tweed Heads uses QLD, Wentworth uses VIC). "First choice" is the warehouse at the top of the sheet's Source Hierarchy preference list for that state. Click a postcode for every size, both services and delivery times.</p>
+      </section>
       <section id="p-pc" role="tabpanel" aria-labelledby="t-pc" class="sect" hidden>
       <div class="stats">
         <div><b id="s-pc">–</b><span>postcodes shown</span></div>
@@ -235,7 +267,7 @@ th:first-child,td:first-child{text-align:left}
 const STATES=__STATES__;
 const WH=__WH__.map(([st,name,addr,pc,lat,lon])=>({st,name,addr,pc,lat,lon}));
 const PC=__PC__.map(([pc,lat,lon,st,ra,names,n,z,area,kind])=>({pc,lat,lon,st,ra,names,n,zn:z<0?4:z,area,kind}));
-const OD=__ORD__,CARS=OD.CARS,MD=__MATCH__;
+const OD=__ORD__,CARS=OD.CARS,MD=__MATCH__,WR=__WEB__;
 let view='del';
 // remote postcodes drawn in boxes at the map's edge, out of their true position
 const INSET={'2898':[156.6,-31.2,'Lord Howe Is.'],'2899':[156.6,-28.9,'Norfolk Is.'],'6798':[109.8,-12.0,'Christmas Is.'],'6799':[109.8,-14.4,'Cocos (Keeling) Is.'],'7151':[150.6,-44.6,'Antarctic & Macquarie Is.']};
@@ -286,7 +318,7 @@ WH.forEach(w=>{w.xy=proj(w.lon,w.lat);const grp=el('g',{class:'wh'});grp.append(
 let k=1,tx=0,ty=0,base=1;
 const X0=(108.6-112)*kx*100,W=(162-112)*kx*100-X0,H=(46.5-9.5)*100;   // room either side for the remote-island boxes and warehouse labels
 function draw(){const z=k/base,f=Math.pow(z,0.4);
-  PC.forEach(p=>{const s=p.el.classList.contains('sel');const n=view==='del'?p.dn:view==='ord'?p.on:0;const r=view==='pc'?(s?6:3.1):(2.2+Math.sqrt(n||0)*1.5)+(s?2:0);p.el.setAttribute('r',r*f/k);});
+  PC.forEach(p=>{const s=p.el.classList.contains('sel');const n=view==='del'?p.dn:view==='ord'?p.on:0;const r=(view==='pc'||view==='rate')?(s?6:3.1):(2.2+Math.sqrt(n||0)*1.5)+(s?2:0);p.el.setAttribute('r',r*f/k);});
   const tr=xy=>`translate(${xy[0]},${xy[1]}) scale(${1/k})`;
   cities.forEach(c=>c.grp.setAttribute('transform',tr(c.xy)));WH.forEach(w=>w.grp.setAttribute('transform',tr(w.xy)));PC.forEach(p=>{if(p.ig)p.ig.setAttribute('transform',tr(p.xy));});labels.forEach(l=>l.t.setAttribute('transform',`translate(${l.xy[0]},${l.xy[1]}) scale(${1/k})`));
   svg.classList.toggle('minor-off',z<1.8);   // cities in the crowded south-east appear once zoomed in
@@ -316,8 +348,8 @@ function buildChips(){on=classes().map(()=>true);raBox.innerHTML='';
     b.onclick=()=>{on[i]=!on[i];if(!on.some(Boolean))on[i]=true;apply();};raBox.append(b);});
   recolour();
   document.getElementById('m-zone').setAttribute('aria-pressed',mode==='zone');document.getElementById('m-ra').setAttribute('aria-pressed',mode==='ra');}
-function recolour(){PC.forEach(p=>{const v=view!=='pc'?`var(${ZN[p.zn][1]})`:`var(${varOf(clsOf(p))})`;p.el.style.fill=v;if(p.kind!=='D')p.el.style.stroke=v;});}
-function apply(){if(view==='del'){applyDel();return;}if(view==='ord'){renderOrders();return;}[...raBox.children].forEach((b,i)=>b.setAttribute('aria-pressed',on[i]));
+function recolour(){if(view==='rate'){rateColour();return;}PC.forEach(p=>{const v=view!=='pc'?`var(${ZN[p.zn][1]})`:`var(${varOf(clsOf(p))})`;p.el.style.fill=v;if(p.kind!=='D')p.el.style.stroke=v;});}
+function apply(){if(view==='del'){applyDel();return;}if(view==='ord'){renderOrders();return;}if(view==='rate'){renderRates();return;}[...raBox.children].forEach((b,i)=>b.setAttribute('aria-pressed',on[i]));
   const po=document.getElementById('showpo').checked,ok=p=>on[clsOf(p)]&&(po||p.kind==='D');
   const vis=PC.filter(ok);PC.forEach(p=>{p.el.style.display=ok(p)?'':'none';if(p.ig)p.ig.style.display=ok(p)?'':'none';});
   document.getElementById('s-pc').textContent=vis.length.toLocaleString();
@@ -358,10 +390,10 @@ function applyDel(){
     li.innerHTML=`<b>${p.pc}</b><span>${esc(p.names.split(', ')[0])} <span class="m">${p.st}</span></span><span class="m">avg ${money(p.dc/p.dn)}</span><span>${p.dn}</span>`;
     li.onclick=()=>flyTo(p);li.onkeydown=e=>{if(e.key==='Enter')flyTo(p);};top.append(li);});
   draw();}
-function setView(v){view=v;['del','ord','pc'].forEach(x=>{document.getElementById('t-'+x).setAttribute('aria-selected',v===x);document.getElementById('p-'+x).hidden=v!==x;});
+function setView(v){view=v;['del','ord','rate','pc'].forEach(x=>{document.getElementById('t-'+x).setAttribute('aria-selected',v===x);document.getElementById('p-'+x).hidden=v!==x;});
   try{localStorage.setItem('auView',v);}catch(e){}recolour();apply();draw();}
-document.getElementById('t-del').onclick=()=>setView('del');document.getElementById('t-pc').onclick=()=>setView('pc');document.getElementById('t-ord').onclick=()=>setView('ord');
-try{const v=localStorage.getItem('auView');if(v==='pc'||v==='ord')view=v;}catch(e){}
+document.getElementById('t-del').onclick=()=>setView('del');document.getElementById('t-pc').onclick=()=>setView('pc');document.getElementById('t-ord').onclick=()=>setView('ord');document.getElementById('t-rate').onclick=()=>setView('rate');
+try{const v=localStorage.getItem('auView');if(['pc','ord','rate'].includes(v))view=v;}catch(e){}
 /* matched orders */
 const MO=MD.map(([pi,wi,ci,ch,co,tot,cogs,date,ninv,nsh,skus,kg,vol,cub,type,inv])=>({p:PC[pi],wi,ci,ch,co:co*1.1,tot,cogs,date,ninv,nsh,skus,kg,vol,cub,type,inv}));
 {const w=document.getElementById('o-wh');WH.forEach((x,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`${x.st} · ${x.name}`;w.append(o);});
@@ -396,16 +428,65 @@ function renderOrders(){
 document.querySelectorAll('#otab th').forEach(th=>th.onclick=()=>{const k=th.dataset.k;oSort=oSort.k===k?{k,dir:-oSort.dir}:{k,dir:['date','ch','co','d'].includes(k)?-1:1};renderOrders();});
 document.getElementById('o-more').onclick=()=>{oLimit+=300;renderOrders();};
 ['o-q','o-zn','o-wh','o-car','o-loss'].forEach(id=>document.getElementById(id).addEventListener(id==='o-q'?'input':'change',()=>{oLimit=200;renderOrders();}));
+/* website charges */
+const SZ=['Small','Medium','Large','XL','XXL'],RZ=['Metro','Outer metro','Regional'];
+const BR=[12.5,19.5,29.5,50,99,199,Infinity],BL=['up to $12.50','$13–$19.50','$20–$29.50','$30–$50','$51–$99','$100–$199','$200+'];
+let rSize=0,rSvc='standard',rFrom='';
+try{const s=JSON.parse(localStorage.getItem('auRate')||'{}');if(s.size>=0&&s.size<5)rSize=s.size;if(s.svc)rSvc=s.svc;}catch(e){}
+const MISS=new Set(WR.miss);
+PC.forEach((p,i)=>{p.wst=WR.over[i]||p.st;p.wmiss=MISS.has(i);});
+const whOf=st=>WH.findIndex(w=>w.st===st);
+const fromFor=(dst,from)=>from||WR.pref[dst][0];
+const priceOf=(dst,from,svc,size,z)=>{const r=WR.R[dst]&&WR.R[dst][from];return r?r[svc][size][z]:undefined;};
+const etaOf=(dst,from,svc,size,z)=>{const r=WR.E[dst]&&WR.E[dst][from];return r?r[svc][size][z]:null;};
+const bucket=v=>BR.findIndex(b=>v<=b);
+{const sb=document.getElementById('r-size');SZ.forEach((s,i)=>{const b=document.createElement('button');b.type='button';b.textContent=s;b.onclick=()=>{rSize=i;saveRate();renderRates();};sb.append(b);});
+ const sv=document.getElementById('r-svc');[['standard','Standard'],['priority','Priority']].forEach(([k,l])=>{const b=document.createElement('button');b.type='button';b.textContent=l;b.dataset.k=k;b.onclick=()=>{rSvc=k;saveRate();renderRates();};sv.append(b);});
+ const f=document.getElementById('r-from');WH.slice().sort((a,b)=>a.st.localeCompare(b.st)).forEach(w=>{const o=document.createElement('option');o.value=w.st;o.textContent=`Everything ships from ${w.st} · ${w.name}`;f.append(o);});
+ f.onchange=()=>{rFrom=f.value;renderRates();};
+ const fl=document.getElementById('r-flags');
+ const gaps=[];Object.entries(WR.R).forEach(([dst,frs])=>Object.entries(frs).forEach(([fr,s])=>['standard','priority'].forEach(sv=>s[sv].forEach((row,i)=>{if(row.some(v=>v==null))gaps.push(`${dst} ${sv} from ${fr} ${SZ[i]}`);}))));
+ const missN=PC.filter(p=>p.wmiss&&p.kind==='D'&&p.zn<3);
+ fl.innerHTML=`<h2>Gaps in the sheet</h2>
+  <div class="flag"><b>${missN.length} NSW Outer Metro postcodes aren't in the website's postcode list</b>Central Coast, Newcastle and Lake Macquarie, Wollongong, the Blue Mountains, Coffs Harbour, Albury and Griffith are in Australia Post's Major Areas but missing from the sheet's Auspost template tab, so the website may not give them an Outer Metro rate. They're grey on the map.</div>
+  <div class="flag"><b>NT priority has no price for XL or XXL</b>Only the TAS and ACT columns have them; from QLD, NSW, VIC, SA and WA the cells are blank.</div>
+  <div class="flag"><b>Two warehouse columns are missing</b>The TAS tab has no "From SA" table and the WA tab has no "From TAS" table.</div>`;}
+function saveRate(){try{localStorage.setItem('auRate',JSON.stringify({size:rSize,svc:rSvc}));}catch(e){}}
+function rateColour(){PC.forEach(p=>{let v='var(--ra-x)';
+  if(!p.wmiss&&p.zn<4){const pr=priceOf(p.wst,fromFor(p.wst,rFrom),rSvc,rSize,Math.min(p.zn,2));p.rp=pr;if(pr!=null)v=`var(--c${bucket(pr)+1})`;}else p.rp=null;
+  p.el.style.fill=v;if(p.kind!=='D')p.el.style.stroke=v;});}
+function renderRates(){
+  [...document.getElementById('r-size').children].forEach((b,i)=>b.setAttribute('aria-pressed',i===rSize));
+  [...document.getElementById('r-svc').children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===rSvc));
+  rateColour();PC.forEach(p=>{const ok=p.kind==='D';p.el.style.display=ok?'':'none';if(p.ig)p.ig.style.display=ok?'':'none';});
+  const cnt=new Array(8).fill(0);PC.forEach(p=>{if(p.kind!=='D')return;if(p.rp==null)cnt[7]++;else cnt[bucket(p.rp)]++;});
+  document.getElementById('r-leg').innerHTML=BL.map((l,i)=>cnt[i]?`<span><i style="background:var(--c${i+1})"></i>${l} <b>${cnt[i]}</b></span>`:'').join('')+(cnt[7]?`<span><i style="background:var(--ra-x)"></i>no rate <b>${cnt[7]}</b></span>`:'');
+  document.getElementById('r-h').textContent=`What a customer pays · ${SZ[rSize]}, ${rSvc}`;
+  const order=['QLD','NSW','ACT','VIC','TAS','SA','WA','NT'];
+  document.querySelector('#r-tab tbody').innerHTML=order.map(dst=>{const fr=fromFor(dst,rFrom);const wi=whOf(fr);
+    return `<tr><td>${dst}</td><td style="text-align:left">${wi>=0?esc(WH[wi].name):fr}</td>${[0,1,2].map(z=>{const v=priceOf(dst,fr,rSvc,rSize,z),e=etaOf(dst,fr,rSvc,rSize,z);
+      return v==null?`<td class="na">${WR.R[dst][fr]?'blank':'no table'}</td>`:`<td>${money(v)}${e?`<small>${esc(e)}</small>`:''}</td>`;}).join('')}</tr>`;}).join('');
+  if(sel)pick(sel);draw();}
+function ratePick(p){
+  if(p.wmiss)return `<p class="note" style="margin-top:8px">This postcode isn't in the website's postcode list, so the sheet gives it no rate.</p>`;
+  const z=Math.min(p.zn,2),dst=p.wst,fr=fromFor(dst,rFrom),wi=whOf(fr);
+  const rows=SZ.map((s,i)=>{const a=priceOf(dst,fr,'standard',i,z),b=priceOf(dst,fr,'priority',i,z),ea=etaOf(dst,fr,'standard',i,z),eb=etaOf(dst,fr,'priority',i,z);
+    const c=v=>v==null?'–':money(v);return `<tr${i===rSize?' style="font-weight:600"':''}><td>${s}</td><td>${c(a)} <small>${esc(ea||'')}</small></td><td>${c(b)} <small>${esc(eb||'')}</small></td></tr>`;}).join('');
+  const others=WR.pref[dst].concat(Object.keys(WR.R[dst]).filter(x=>!WR.pref[dst].includes(x))).map(f=>{const v=priceOf(dst,f,rSvc,rSize,z);const w=whOf(f);
+    return `<tr${f===fr?' style="font-weight:600"':''}><td>${w>=0?esc(WH[w].name):f} <small>${f}</small></td><td>${v==null?'–':money(v)}</td></tr>`;}).join('');
+  return `<h2 style="margin-top:12px;font-size:16px">Website charge · ${RZ[z]}${dst!==p.st?`, ${dst} tab`:''}</h2>
+    <table class="ptab"><thead><tr><th>From ${wi>=0?esc(WH[wi].name):fr}</th><th>Standard</th><th>Priority</th></tr></thead><tbody>${rows}</tbody></table>
+    <table class="ptab"><thead><tr><th>${SZ[rSize]}, ${rSvc}, from each warehouse</th><th></th></tr></thead><tbody>${others}</tbody></table>`;}
 /* search + pick */
 let sel=null;
 function pick(p){if(sel)sel.el.classList.remove('sel');sel=p;p.el.classList.add('sel');dg.append(p.el);
   const c=document.getElementById('pick');c.hidden=false;
   c.innerHTML=`<div class="pcnum">${p.pc}</div><div>${esc(p.names)}${p.n>4?` <span class="note">+${p.n-4} more</span>`:''}</div>
-   <dl class="kv"><dt>State</dt><dd>${p.st}</dd><dt>Australia Post zone</dt><dd><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(${ZN[p.zn][1]});margin-right:6px"></span>${ZN[p.zn][0]} · ${ZN[p.zn][2]}${p.area&&p.zn<3?`: ${esc(p.area)}`:''}${p.inset?` (${esc(p.inset)}, shown out of position)`:''}</dd><dt>Remoteness</dt><dd><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(${raVar(p.ra)});margin-right:6px"></span>${raName(p.ra)}</dd><dt>Suburbs and towns</dt><dd>${p.n}</dd><dt>Nearest warehouse</dt><dd>${esc(p.nw.w.name)} (${esc(p.nw.w.st)}), ${Math.round(p.nw.d).toLocaleString()} km in a straight line</dd>${p.dn?`<dt>Consignments</dt><dd>${p.dn} · avg ${money(p.dc/p.dn)} incl. GST</dd>`:''}</dl>`;
+   <dl class="kv"><dt>State</dt><dd>${p.st}</dd><dt>Australia Post zone</dt><dd><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(${ZN[p.zn][1]});margin-right:6px"></span>${ZN[p.zn][0]} · ${ZN[p.zn][2]}${p.area&&p.zn<3?`: ${esc(p.area)}`:''}${p.inset?` (${esc(p.inset)}, shown out of position)`:''}</dd><dt>Remoteness</dt><dd><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(${raVar(p.ra)});margin-right:6px"></span>${raName(p.ra)}</dd><dt>Suburbs and towns</dt><dd>${p.n}</dd><dt>Nearest warehouse</dt><dd>${esc(p.nw.w.name)} (${esc(p.nw.w.st)}), ${Math.round(p.nw.d).toLocaleString()} km in a straight line</dd>${p.dn?`<dt>Consignments</dt><dd>${p.dn} · avg ${money(p.dc/p.dn)} incl. GST</dd>`:''}</dl>${view==='rate'?ratePick(p):''}`;
   draw();}
 function flyTo(p){const b=svg.getBoundingClientRect();k=base*8;tx=b.width/2-p.xy[0]*k;ty=b.height/2-p.xy[1]*k;pick(p);}
 document.getElementById('q').addEventListener('keydown',e=>{if(e.key!=='Enter')return;const v=e.target.value.trim().toLowerCase();if(!v)return;
-  const p=PC.find(p=>p.pc===v.padStart(4,'0')&&(view==='pc'||(view==='del'?p.dn:p.on)))||PC.find(p=>p.pc===v.padStart(4,'0'))||PC.find(p=>p.names.toLowerCase().split(', ').includes(v))||PC.find(p=>p.names.toLowerCase().includes(v));
+  const p=PC.find(p=>p.pc===v.padStart(4,'0')&&(view==='pc'||view==='rate'||(view==='del'?p.dn:p.on)))||PC.find(p=>p.pc===v.padStart(4,'0'))||PC.find(p=>p.names.toLowerCase().split(', ').includes(v))||PC.find(p=>p.names.toLowerCase().includes(v));
   if(p)flyTo(p);else{e.target.setCustomValidity('No Australian postcode or suburb by that name');e.target.reportValidity();setTimeout(()=>e.target.setCustomValidity(''),1800);}});
 function flyWh(w){const b=svg.getBoundingClientRect();k=base*10;tx=b.width/2-w.xy[0]*k;ty=b.height/2-w.xy[1]*k;draw();}
 {const L=document.getElementById('whlist');WH.slice().sort((a,b)=>a.st.localeCompare(b.st)).forEach(w=>{const b=document.createElement('button');b.type='button';
