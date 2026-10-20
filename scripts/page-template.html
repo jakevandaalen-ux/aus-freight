@@ -33,6 +33,10 @@ body{background:var(--sea);color:var(--ink);font:15px/1.5 var(--body)}
 .state{fill:var(--land);stroke:var(--coast);stroke-width:.8;vector-effect:non-scaling-stroke}
 .slabel{font:700 15px var(--display);letter-spacing:.08em;fill:var(--muted);opacity:.55;pointer-events:none;text-anchor:middle}
 .pc{stroke:var(--land);stroke-width:.5;vector-effect:non-scaling-stroke;fill-opacity:.8;cursor:pointer}
+.pc.po{fill:none!important;stroke-width:1.4}
+.pc.po.sel{stroke-width:2.4}
+.inset rect{fill:none;stroke:var(--coast);stroke-dasharray:3 3;stroke-width:1;vector-effect:non-scaling-stroke}
+.inset text{font:500 11.5px var(--body);fill:var(--muted);paint-order:stroke;stroke:var(--sea);stroke-width:3px}
 .pc.sel{stroke:var(--ink);stroke-width:2;fill-opacity:1}
 .wh path{fill:var(--wh);stroke:var(--land);stroke-width:1.4;stroke-linejoin:round}
 .wh text{font:700 13px var(--body);fill:var(--wh);paint-order:stroke;stroke:var(--land);stroke-width:3.5px;stroke-linejoin:round}
@@ -42,8 +46,10 @@ body{background:var(--sea);color:var(--ink);font:15px/1.5 var(--body)}
 .whlist button:focus-visible{outline:2px solid var(--hi);outline-offset:2px}
 .whlist small{display:block;color:var(--muted);font-size:13px}
 .whlist .n{font-variant-numeric:tabular-nums;color:var(--muted);font-size:13px}
+.city.cap text{font:700 13px var(--body)}
+.minor-off .city.crowd{display:none}
 .city circle{fill:var(--ink);stroke:var(--land);stroke-width:1.5}
-.city text{font:600 13px var(--body);fill:var(--ink);paint-order:stroke;stroke:var(--land);stroke-width:3.5px;stroke-linejoin:round}
+.city text{font:500 11.5px var(--body);fill:var(--ink);paint-order:stroke;stroke:var(--land);stroke-width:3.5px;stroke-linejoin:round}
 .zoom{position:absolute;left:max(16px,env(safe-area-inset-left,0px));bottom:16px;display:flex;flex-direction:column;gap:6px}
 .zoom button{width:34px;height:34px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:600 18px var(--body);cursor:pointer}
 .zoom button:focus-visible,.chip:focus-visible,input:focus-visible{outline:2px solid var(--hi);outline-offset:2px}
@@ -115,13 +121,14 @@ th:first-child,td:first-child{text-align:left}
         <h2>Colour postcodes by</h2>
         <div class="toggle" role="group" aria-label="Colour postcodes by"><button type="button" id="m-zone" aria-pressed="true">Australia Post zone</button><button type="button" id="m-ra" aria-pressed="false">Remoteness</button></div>
         <div class="chips" id="ra"></div>
+        <label style="display:flex;gap:8px;align-items:center;font-size:14px"><input type="checkbox" id="showpo" checked> Show PO box and business-only postcodes <span class="note" id="pocount"></span></label>
       </div>
       <div style="display:flex;flex-direction:column;gap:8px">
         <h2>Postcodes by state</h2>
         <div style="overflow-x:auto"><table id="bystate"><thead><tr><th>State</th><th>Postcodes</th><th>Metro</th><th>Outer metro</th><th>Regional</th><th>Remote (ABS)</th></tr></thead><tbody></tbody></table></div>
       </div>
       <div class="next"><p><b>Next:</b> add your Australian orders to put real deliveries on the map, then the courier rate cards to build the calculator and recommended charges, as for New Zealand.</p></div>
-      <p class="note">Australia Post zones come from Australia Post's <a href="https://auspost.com.au/content/dam/auspost_corp/media/documents/mpb-zone-1-coverage.pdf" target="_blank" rel="noopener">MyPost Business postcode list</a>: <b>Metro</b> = Capital City (the eight capitals), <b>Outer metro</b> = Major Areas (e.g. Gold Coast, Newcastle, Geelong, Launceston), <b>Regional</b> = Rural (each state's "Outer" postcodes), plus Remote Islands &amp; Locations. Australia Post notes that TAS Other postcodes don't get Zone 1 pricing. Postcode locations and remoteness (ABS Remoteness Areas 2021) come from the <a href="https://github.com/matthewproctor/australianpostcodes" target="_blank" rel="noopener">Australian Postcodes dataset</a>; each dot sits at the average position of the postcode's suburbs, and PO-box-only postcodes are left out. State outlines are simplified from Natural Earth via world-geojson. The ACT sits inside the NSW outline. Warehouses are placed at their suburb's centre, and "postcodes" beside each one counts the postcodes it is closest to in a straight line (road distance will differ).</p>
+      <p class="note">Australia Post zones come from Australia Post's <a href="https://auspost.com.au/content/dam/auspost_corp/media/documents/mpb-zone-1-coverage.pdf" target="_blank" rel="noopener">MyPost Business postcode list</a>: <b>Metro</b> = Capital City (the eight capitals), <b>Outer metro</b> = Major Areas (e.g. Gold Coast, Newcastle, Geelong, Launceston), <b>Regional</b> = Rural (each state's "Outer" postcodes), plus Remote Islands &amp; Locations. Australia Post notes that TAS Other postcodes don't get Zone 1 pricing. Postcode locations and remoteness (ABS Remoteness Areas 2021) come from the <a href="https://github.com/matthewproctor/australianpostcodes" target="_blank" rel="noopener">Australian Postcodes dataset</a>; each dot sits at the average position of the postcode's suburbs, PO-box and business-only postcodes (rings) are placed at their post office. Remote islands and the Antarctic postcode are drawn in dashed boxes at the map's edge, out of their true position. Australia Post's ranges also include about 800 numbers that aren't real postcodes; those can't be shown. State outlines are simplified from Natural Earth via world-geojson. The ACT sits inside the NSW outline. Warehouses are placed at their suburb's centre, and "postcodes" beside each one counts the postcodes it is closest to in a straight line (road distance will differ).</p>
     </div>
   </aside>
 </div>
@@ -130,12 +137,21 @@ th:first-child,td:first-child{text-align:left}
 <script>
 const STATES=__STATES__;
 const WH=__WH__.map(([st,name,addr,pc,lat,lon])=>({st,name,addr,pc,lat,lon}));
-const PC=__PC__.map(([pc,lat,lon,st,ra,names,n,z,area])=>({pc,lat,lon,st,ra,names,n,zn:z<0?4:z,area}));
+const PC=__PC__.map(([pc,lat,lon,st,ra,names,n,z,area,kind])=>({pc,lat,lon,st,ra,names,n,zn:z<0?4:z,area,kind}));
+// remote postcodes drawn in boxes at the map's edge, out of their true position
+const INSET={'2898':[156.6,-31.2,'Lord Howe Is.'],'2899':[156.6,-28.9,'Norfolk Is.'],'6798':[109.8,-12.0,'Christmas Is.'],'6799':[109.8,-14.4,'Cocos (Keeling) Is.'],'7151':[150.6,-44.6,'Antarctic & Macquarie Is.']};
 // Australia Post MyPost Business postcode groups
 const ZN=[['Metro','--z0','Capital City'],['Outer metro','--z1','Major Area'],['Regional','--z2','Rural'],['Remote islands','--z3','Remote Islands & Locations'],['Not listed','--ra-x','not in Australia Post\'s list']];
 const RA=[['Major cities','--ra0'],['Inner regional','--ra1'],['Outer regional','--ra2'],['Remote','--ra3'],['Very remote','--ra4']];
-// capitals without a warehouse of ours nearby (the warehouse stars mark the others)
-const CITIES=[['Darwin',130.84,-12.46]];
+// capital and major cities: [name, lon, lat, capital?, label side]
+const CITIES=[['Sydney',151.21,-33.87,1,'L'],['Melbourne',144.96,-37.81,1,'L'],['Brisbane',153.03,-27.47,1,'L'],['Perth',115.86,-31.95,1,'L'],['Adelaide',138.6,-34.93,1,'L'],
+ ['Hobart',147.33,-42.88,1,'L'],['Darwin',130.84,-12.46,1,'R'],['Canberra',149.13,-35.28,1,'L'],
+ ['Gold Coast',153.43,-28.0,0,'R'],['Sunshine Coast',153.07,-26.65,0,'R'],['Newcastle',151.78,-32.93,0,'R'],['Wollongong',150.89,-34.42,0,'R'],['Geelong',144.36,-38.15,0,'L'],
+ ['Townsville',146.82,-19.26,0,'R'],['Cairns',145.77,-16.92,0,'R'],['Toowoomba',151.95,-27.56,0,'L'],['Ballarat',143.85,-37.56,0,'L'],['Bendigo',144.28,-36.76,0,'L'],
+ ['Launceston',147.14,-41.43,0,'L'],['Mackay',149.19,-21.14,0,'R'],['Rockhampton',150.51,-23.38,0,'R'],['Bundaberg',152.35,-24.87,0,'R'],['Albury',146.92,-36.08,0,'L'],
+ ['Wagga Wagga',147.37,-35.12,0,'L'],['Mildura',142.16,-34.19,0,'L'],['Alice Springs',133.88,-23.7,0,'R'],['Bunbury',115.64,-33.33,0,'L'],['Geraldton',114.61,-28.78,0,'R'],
+ ['Kalgoorlie',121.47,-30.75,0,'R'],['Port Hedland',118.6,-20.31,0,'R'],['Broome',122.24,-17.96,0,'R'],['Mount Isa',139.49,-20.73,0,'R'],['Port Augusta',137.77,-32.49,0,'R'],
+ ['Dubbo',148.6,-32.25,0,'L'],['Tamworth',150.93,-31.09,0,'L'],['Coffs Harbour',153.11,-30.3,0,'R']];
 const SLAB={WA:[122,-25.5],NT:[133.4,-19.5],SA:[135.5,-30],QLD:[144.5,-22.5],NSW:[146.5,-32.2],VIC:[144,-36.9],TAS:[146.6,-42.1]};
 const NS='http://www.w3.org/2000/svg',el=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e;};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -149,8 +165,11 @@ const tip=document.getElementById('tip');
 const showTip=(h,e)=>{tip.innerHTML=h;tip.hidden=false;moveTip(e);};
 const moveTip=e=>{const w=tip.offsetWidth;let x=e.clientX+14;if(x+w>innerWidth-8)x=e.clientX-w-14;tip.style.left=x+'px';tip.style.top=(e.clientY+12)+'px';};
 const raName=r=>r>=0?RA[r][0]:'Not classified',raVar=r=>r>=0?RA[r][1]:'--ra-x';
-const PCtmp=0;PC.forEach(p=>{p.xy=proj(p.lon,p.lat);const c=el('circle',{cx:p.xy[0],cy:p.xy[1],class:'pc'});p.el=c;dg.append(c);
-  c.addEventListener('pointerenter',e=>showTip(`<b>${p.pc}</b> · ${p.st}<br>${esc(p.names)}${p.n>4?` <span class="m">+${p.n-4} more</span>`:''}<br><span class="m">${ZN[p.zn][0]}${p.area?` (${esc(p.area)})`:''} · ${raName(p.ra)}<br>${Math.round(p.nw.d).toLocaleString()} km from ${esc(p.nw.w.name)}</span>`,e));
+const PCtmp=0;const ig=el('g',{class:'inset'});sg.after(ig);
+PC.forEach(p=>{const ins=INSET[p.pc];p.xy=ins?proj(ins[0],ins[1]):proj(p.lon,p.lat);
+  if(ins){const gg=el('g',{});gg.append(el('rect',{x:-20,y:-20,width:40,height:40,rx:6}));const tx=el('text',{x:26,y:4});tx.textContent=ins[2];gg.append(tx);ig.append(gg);p.inset=ins[2];p.ig=gg;}
+  const c=el('circle',{cx:p.xy[0],cy:p.xy[1],class:'pc'+(p.kind!=='D'?' po':'')});p.el=c;dg.append(c);
+  c.addEventListener('pointerenter',e=>showTip(`<b>${p.pc}</b> · ${p.st}${p.kind!=='D'?' · PO boxes / business only':''}${p.inset?' · shown out of position':''}<br>${esc(p.names)}${p.n>4?` <span class="m">+${p.n-4} more</span>`:''}<br><span class="m">${ZN[p.zn][0]}${p.area&&p.zn<3?` (${esc(p.area)})`:''} · ${raName(p.ra)}<br>${Math.round(p.nw.d).toLocaleString()} km from ${esc(p.nw.w.name)}</span>`,e));
   c.addEventListener('pointermove',moveTip);c.addEventListener('pointerleave',()=>tip.hidden=true);
   c.addEventListener('click',()=>pick(p));});
 const STAR='M0,-9L2.6,-3.3L8.6,-2.8L4,1.2L5.3,7.3L0,4.2L-5.3,7.3L-4,1.2L-8.6,-2.8L-2.6,-3.3Z';
@@ -158,18 +177,20 @@ const km=(a,b)=>{const R=6371,r=Math.PI/180,dl=(b.lat-a.lat)*r,dn=(b.lon-a.lon)*
 const nearest=p=>WH.map(w=>({w,d:km(p,w)})).sort((a,b)=>a.d-b.d)[0];
 PC.forEach(p=>{p.nw=nearest(p);});
 const wg=el('g',{});
-const cities=CITIES.map(([n,lo,la])=>{const xy=proj(lo,la),grp=el('g',{class:'city'});grp.append(el('circle',{r:4}));const t=el('text',{x:7,y:4});t.textContent=n;if(n==='Canberra'){t.setAttribute('x',-7);t.setAttribute('text-anchor','end');}grp.append(t);cg.append(grp);return {grp,xy};});
+const CROWD=new Set(['Gold Coast','Sunshine Coast','Newcastle','Wollongong','Geelong','Toowoomba','Ballarat','Bendigo','Launceston','Bundaberg','Albury','Wagga Wagga','Mildura','Bunbury','Dubbo','Tamworth','Coffs Harbour']);
+const cities=CITIES.map(([n,lo,la,cap,side])=>{const xy=proj(lo,la),grp=el('g',{class:'city'+(cap?' cap':'')+(CROWD.has(n)?' crowd':'')});grp.append(el('circle',{r:cap?4:3}));const t=el('text',{x:side==='L'?-7:7,y:4,'text-anchor':side==='L'?'end':'start'});t.textContent=n;grp.append(t);cg.append(grp);return {grp,xy,cap};});
 g.append(wg);
 WH.forEach(w=>{w.xy=proj(w.lon,w.lat);const grp=el('g',{class:'wh'});grp.append(el('path',{d:STAR}));const t=el('text',{x:11,y:-6});t.textContent=w.name;grp.append(t);
   grp.addEventListener('pointerenter',e=>showTip(`<b>${esc(w.st)} warehouse · ${esc(w.name)}</b><br>${esc(w.addr)}<br><span class="m">Nearest warehouse for ${PC.filter(p=>p.nw.w===w).length} postcodes</span>`,e));
   grp.addEventListener('pointermove',moveTip);grp.addEventListener('pointerleave',()=>tip.hidden=true);grp.addEventListener('click',()=>flyWh(w));w.grp=grp;wg.append(grp);});
 /* pan + zoom */
 let k=1,tx=0,ty=0,base=1;
-const X0=-60,W=(156.6-112)*kx*100-X0,H=(44-9.5)*100;   // a little room east of the coast for the warehouse labels
+const X0=(108.6-112)*kx*100,W=(162-112)*kx*100-X0,H=(46.5-9.5)*100;   // room either side for the remote-island boxes and warehouse labels
 function draw(){const z=k/base,f=Math.pow(z,0.4);
   PC.forEach(p=>p.el.setAttribute('r',(p.el.classList.contains('sel')?6:3.1)*f/k));
   const tr=xy=>`translate(${xy[0]},${xy[1]}) scale(${1/k})`;
-  cities.forEach(c=>c.grp.setAttribute('transform',tr(c.xy)));WH.forEach(w=>w.grp.setAttribute('transform',tr(w.xy)));labels.forEach(l=>l.t.setAttribute('transform',`translate(${l.xy[0]},${l.xy[1]}) scale(${1/k})`));
+  cities.forEach(c=>c.grp.setAttribute('transform',tr(c.xy)));WH.forEach(w=>w.grp.setAttribute('transform',tr(w.xy)));PC.forEach(p=>{if(p.ig)p.ig.setAttribute('transform',tr(p.xy));});labels.forEach(l=>l.t.setAttribute('transform',`translate(${l.xy[0]},${l.xy[1]}) scale(${1/k})`));
+  svg.classList.toggle('minor-off',z<1.8);   // cities in the crowded south-east appear once zoomed in
   g.setAttribute('transform',`translate(${tx},${ty}) scale(${k})`);}
 function fit(){const b=svg.getBoundingClientRect();base=Math.min(b.width/W,b.height/H)*0.94;k=base;tx=(b.width-W*k)/2-X0*k;ty=(b.height-H*k)/2;draw();}
 function zoomAt(f,cx,cy){const nk=Math.max(base*0.8,Math.min(base*40,k*f));tx=cx-(cx-tx)*nk/k;ty=cy-(cy-ty)*nk/k;k=nk;draw();}
@@ -194,13 +215,15 @@ function buildChips(){on=classes().map(()=>true);raBox.innerHTML='';
   classes().forEach((nm,i)=>{const b=document.createElement('button');b.type='button';b.className='chip';b.setAttribute('aria-pressed','true');
     b.innerHTML=`<i style="background:var(${varOf(i)})"></i>${nm} <b>${PC.filter(p=>clsOf(p)===i).length.toLocaleString()}</b>`;
     b.onclick=()=>{on[i]=!on[i];if(!on.some(Boolean))on[i]=true;apply();};raBox.append(b);});
-  PC.forEach(p=>p.el.style.fill=`var(${varOf(clsOf(p))})`);
+  PC.forEach(p=>{const v=`var(${varOf(clsOf(p))})`;p.el.style.fill=v;if(p.kind!=='D')p.el.style.stroke=v;});
   document.getElementById('m-zone').setAttribute('aria-pressed',mode==='zone');document.getElementById('m-ra').setAttribute('aria-pressed',mode==='ra');}
 function apply(){[...raBox.children].forEach((b,i)=>b.setAttribute('aria-pressed',on[i]));
-  const vis=PC.filter(p=>on[clsOf(p)]);PC.forEach(p=>p.el.style.display=on[clsOf(p)]?'':'none');
+  const po=document.getElementById('showpo').checked,ok=p=>on[clsOf(p)]&&(po||p.kind==='D');
+  const vis=PC.filter(ok);PC.forEach(p=>p.el.style.display=ok(p)?'':'none');
   document.getElementById('s-pc').textContent=vis.length.toLocaleString();
   document.getElementById('s-loc').textContent=vis.reduce((s,p)=>s+p.n,0).toLocaleString();}
 const setMode=m=>{mode=m;try{localStorage.setItem('auMode',m);}catch(e){}buildChips();apply();};
+document.getElementById('showpo').onchange=apply;document.getElementById('pocount').textContent=`(${PC.filter(p=>p.kind!=='D').length}, drawn as rings)`;
 document.getElementById('m-zone').onclick=()=>setMode('zone');document.getElementById('m-ra').onclick=()=>setMode('ra');
 {const tb=document.querySelector('#bystate tbody');const S={};PC.forEach(p=>{const s=S[p.st]||(S[p.st]=[0,0,0,0,0]);s[0]++;if(p.zn<3)s[1+p.zn]++;if(p.ra>=3)s[4]++;});
   Object.entries(S).sort((a,b)=>b[1][0]-a[1][0]).forEach(([st,v])=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${st}</td>${v.map(x=>`<td>${x}</td>`).join('')}`;tb.append(tr);});}
@@ -209,7 +232,7 @@ let sel=null;
 function pick(p){if(sel)sel.el.classList.remove('sel');sel=p;p.el.classList.add('sel');dg.append(p.el);
   const c=document.getElementById('pick');c.hidden=false;
   c.innerHTML=`<div class="pcnum">${p.pc}</div><div>${esc(p.names)}${p.n>4?` <span class="note">+${p.n-4} more</span>`:''}</div>
-   <dl class="kv"><dt>State</dt><dd>${p.st}</dd><dt>Australia Post zone</dt><dd><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(${ZN[p.zn][1]});margin-right:6px"></span>${ZN[p.zn][0]} · ${ZN[p.zn][2]}${p.area?`: ${esc(p.area)}`:''}</dd><dt>Remoteness</dt><dd><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(${raVar(p.ra)});margin-right:6px"></span>${raName(p.ra)}</dd><dt>Suburbs and towns</dt><dd>${p.n}</dd><dt>Nearest warehouse</dt><dd>${esc(p.nw.w.name)} (${esc(p.nw.w.st)}), ${Math.round(p.nw.d).toLocaleString()} km in a straight line</dd></dl>`;
+   <dl class="kv"><dt>State</dt><dd>${p.st}</dd><dt>Australia Post zone</dt><dd><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(${ZN[p.zn][1]});margin-right:6px"></span>${ZN[p.zn][0]} · ${ZN[p.zn][2]}${p.area&&p.zn<3?`: ${esc(p.area)}`:''}${p.inset?` (${esc(p.inset)}, shown out of position)`:''}</dd><dt>Remoteness</dt><dd><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(${raVar(p.ra)});margin-right:6px"></span>${raName(p.ra)}</dd><dt>Suburbs and towns</dt><dd>${p.n}</dd><dt>Nearest warehouse</dt><dd>${esc(p.nw.w.name)} (${esc(p.nw.w.st)}), ${Math.round(p.nw.d).toLocaleString()} km in a straight line</dd></dl>`;
   draw();}
 function flyTo(p){const b=svg.getBoundingClientRect();k=base*8;tx=b.width/2-p.xy[0]*k;ty=b.height/2-p.xy[1]*k;pick(p);}
 document.getElementById('q').addEventListener('keydown',e=>{if(e.key!=='Enter')return;const v=e.target.value.trim().toLowerCase();if(!v)return;
