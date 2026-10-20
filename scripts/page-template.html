@@ -6,7 +6,7 @@
 /* Layout: full-height map of Australia on the left, a working panel on the right (stacks below the map on phones). Same family as the NZ Freight map. */
 :root{
   --sea:#d6e4ea; --land:#fbfaf6; --coast:#7f9cab; --border:#b9cbd3; --ink:#16323f; --muted:#5a7380;
-  --panel:#ffffff; --line:#c9d8df; --soft:#eef4f6; --hi:#ffb400; --wh:#c0265e;
+  --panel:#ffffff; --line:#c9d8df; --soft:#eef4f6; --hi:#ffb400; --wh:#c0265e; --good:#16805a; --bad:#b4471a;
   --z0:#1d5f86; --z1:#3aa38f; --z2:#d39b2a; --z3:#a32c1c;
   --ra0:#1d5f86; --ra1:#3f8fa8; --ra2:#d39b2a; --ra3:#c8641f; --ra4:#a32c1c; --ra-x:#8d9aa1;
   --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
@@ -14,12 +14,12 @@
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
   --sea:#0f2530; --land:#22343c; --coast:#4c6d7c; --border:#3b5664; --ink:#e7eff2; --muted:#9db3bd;
-  --panel:#162b35; --line:#2c4552; --soft:#1c3440; --hi:#ffc93c; --wh:#ff5c8f;
+  --panel:#162b35; --line:#2c4552; --soft:#1c3440; --hi:#ffc93c; --wh:#ff5c8f; --good:#4fd29a; --bad:#ff9a6b;
   --z0:#5db3e0; --z1:#6fd6bd; --z2:#f0c25a; --z3:#ff6a55;
   --ra0:#5db3e0; --ra1:#7fd0d8; --ra2:#f0c25a; --ra3:#f08a4b; --ra4:#ff6a55; --ra-x:#7d8b92; color-scheme:dark } }
 :root[data-theme="dark"]{
   --sea:#0f2530; --land:#22343c; --coast:#4c6d7c; --border:#3b5664; --ink:#e7eff2; --muted:#9db3bd;
-  --panel:#162b35; --line:#2c4552; --soft:#1c3440; --hi:#ffc93c; --wh:#ff5c8f;
+  --panel:#162b35; --line:#2c4552; --soft:#1c3440; --hi:#ffc93c; --wh:#ff5c8f; --good:#4fd29a; --bad:#ff9a6b;
   --z0:#5db3e0; --z1:#6fd6bd; --z2:#f0c25a; --z3:#ff6a55;
   --ra0:#5db3e0; --ra1:#7fd0d8; --ra2:#f0c25a; --ra3:#f08a4b; --ra4:#ff6a55; --ra-x:#7d8b92; color-scheme:dark }
 *{box-sizing:border-box}
@@ -67,6 +67,28 @@ input[type=search]{width:100%;padding:10px 12px;border:1px solid var(--line);bor
 .toggle{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
 .toggle button{flex:1;padding:7px;border:0;background:transparent;color:var(--ink);font:500 14px var(--body);cursor:pointer}
 .toggle button[aria-pressed=true]{background:var(--ink);color:var(--panel)}
+.ostats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.ostats div{border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.ostats b{display:block;font:700 22px/1.2 var(--display);font-variant-numeric:tabular-nums}
+.ostats span{font-size:12px;color:var(--muted)}
+.g{color:var(--good)}.w{color:var(--bad)}
+.ofilt3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.ofilt3 input[type=search],.ofilt3 .check{grid-column:1/-1}
+.ofilt3 select,.ofilt3 input[type=search]{padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--land);color:var(--ink);font:inherit;font-size:14px;min-width:0}
+.check{display:flex;gap:8px;align-items:center;font-size:14px}
+.otable{overflow-x:auto}
+#otab{font-size:13px}
+#otab th{cursor:pointer;white-space:nowrap;user-select:none;padding-left:12px}
+#otab th.l,#otab td.l{text-align:left}
+#otab th[aria-sort=ascending]::after{content:' ▲';font-size:9px}
+#otab th[aria-sort=descending]::after{content:' ▼';font-size:9px}
+#otab td{padding:6px 4px 6px 12px;white-space:nowrap}
+#otab td:first-child,#otab th:first-child{padding-left:0}
+#otab tbody tr{cursor:pointer}
+#otab tbody tr:hover{background:var(--soft)}
+#otab td .s{display:block;font-size:11.5px;color:var(--muted);max-width:200px;overflow:hidden;text-overflow:ellipsis}
+td.w,td.g{font-weight:600}
+.linkbtn{background:none;border:0;color:var(--ink);text-decoration:underline;font:inherit;cursor:pointer;padding:0;align-self:flex-start}
 .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line)}
 .tabs button{padding:8px 12px;border:0;border-bottom:3px solid transparent;background:transparent;color:var(--muted);font:600 15px var(--body);cursor:pointer;margin-bottom:-1px}
 .tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--wh)}
@@ -118,6 +140,7 @@ th:first-child,td:first-child{text-align:left}
       </div>
       <div class="tabs" role="tablist" aria-label="View">
         <button role="tab" id="t-del" aria-selected="true" aria-controls="p-del">Deliveries</button>
+        <button role="tab" id="t-ord" aria-selected="false" aria-controls="p-ord">Orders</button>
         <button role="tab" id="t-pc" aria-selected="false" aria-controls="p-pc">Postcodes</button>
       </div>
       <input type="search" id="q" placeholder="Find a postcode or suburb, e.g. 4870 or Cairns" aria-label="Find a postcode or suburb">
@@ -151,6 +174,28 @@ th:first-child,td:first-child{text-align:left}
         </div>
         <p class="note">From the carrier export: <span id="d-range"></span>. Cost is the invoiced cost where billed, otherwise the carrier's estimate, plus 10% GST. Bigger dots mean more consignments; colour is the Australia Post zone. Customer names are not included.</p>
       </section>
+      <section id="p-ord" role="tabpanel" aria-labelledby="t-ord" class="sect" hidden>
+        <p class="sub" style="margin:0">Orders matched across the sales, freight and carrier reports: what the customer paid for shipping against what the carrier charged us. All amounts include GST.</p>
+        <div class="ostats" id="ostats"></div>
+        <div class="ofilt3">
+          <input type="search" id="o-q" placeholder="Search postcode, suburb, SKU or invoice" aria-label="Search orders">
+          <select id="o-zn" aria-label="Zone"><option value="">All zones</option><option value="0">Metro</option><option value="1">Outer metro</option><option value="2">Regional</option></select>
+          <select id="o-wh" aria-label="Warehouse"><option value="">All warehouses</option></select>
+          <select id="o-car" aria-label="Carrier"><option value="">All carriers</option></select>
+          <label class="check"><input type="checkbox" id="o-loss"> Only orders where we charged less than it cost</label>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <h2>Charged vs cost by zone</h2>
+          <div style="overflow-x:auto"><table id="o-zone"><thead><tr><th>Zone</th><th>Orders</th><th>Avg charged</th><th>Avg cost</th><th>Gap</th></tr></thead><tbody></tbody></table></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <h2>Charged vs cost by warehouse</h2>
+          <div style="overflow-x:auto"><table id="o-whs"><thead><tr><th>Warehouse</th><th>Orders</th><th>Avg charged</th><th>Avg cost</th><th>Gap</th></tr></thead><tbody></tbody></table></div>
+        </div>
+        <div class="otable"><table id="otab"><thead><tr><th data-k="date" class="l">Date</th><th data-k="pc" class="l">Delivered to</th><th data-k="wh" class="l">From</th><th data-k="car" class="l">Carrier</th><th data-k="ch">We charged</th><th data-k="co">Cost us</th><th data-k="d">Charged − cost</th></tr></thead><tbody></tbody></table></div>
+        <button type="button" class="linkbtn" id="o-more" hidden>Show more</button>
+        <p class="note">Matched by customer name across the three reports ("3 of 3" in column F): <span id="o-cnt"></span>. A customer with several orders in the period counts as one row, with their charges and shipments added together. "Cost us" uses the invoiced cost where the carrier has billed it and the carrier's estimate where it hasn't yet (the match file's own summary counts unbilled shipments as $0), plus 10% GST. "We charged" is the freight charged on the invoices. Click an order to find it on the map. Customer names, emails and phone numbers are not included.</p>
+      </section>
       <section id="p-pc" role="tabpanel" aria-labelledby="t-pc" class="sect" hidden>
       <div class="stats">
         <div><b id="s-pc">–</b><span>postcodes shown</span></div>
@@ -182,7 +227,7 @@ th:first-child,td:first-child{text-align:left}
 const STATES=__STATES__;
 const WH=__WH__.map(([st,name,addr,pc,lat,lon])=>({st,name,addr,pc,lat,lon}));
 const PC=__PC__.map(([pc,lat,lon,st,ra,names,n,z,area,kind])=>({pc,lat,lon,st,ra,names,n,zn:z<0?4:z,area,kind}));
-const OD=__ORD__,CARS=OD.CARS;
+const OD=__ORD__,CARS=OD.CARS,MD=__MATCH__;
 let view='del';
 // remote postcodes drawn in boxes at the map's edge, out of their true position
 const INSET={'2898':[156.6,-31.2,'Lord Howe Is.'],'2899':[156.6,-28.9,'Norfolk Is.'],'6798':[109.8,-12.0,'Christmas Is.'],'6799':[109.8,-14.4,'Cocos (Keeling) Is.'],'7151':[150.6,-44.6,'Antarctic & Macquarie Is.']};
@@ -215,7 +260,7 @@ const PCtmp=0;const ig=el('g',{class:'inset'});sg.after(ig);
 PC.forEach(p=>{const ins=INSET[p.pc];p.xy=ins?proj(ins[0],ins[1]):proj(p.lon,p.lat);
   if(ins){const gg=el('g',{});gg.append(el('rect',{x:-20,y:-20,width:40,height:40,rx:6}));const tx=el('text',{x:26,y:4});tx.textContent=ins[2];gg.append(tx);ig.append(gg);p.inset=ins[2];p.ig=gg;}
   const c=el('circle',{cx:p.xy[0],cy:p.xy[1],class:'pc'+(p.kind!=='D'?' po':'')});p.el=c;dg.append(c);
-  c.addEventListener('pointerenter',e=>showTip(`<b>${p.pc}</b> · ${p.st}${p.kind!=='D'?' · PO boxes / business only':''}${p.inset?' · shown out of position':''}<br>${esc(p.names)}${p.n>4?` <span class="m">+${p.n-4} more</span>`:''}<br><span class="m">${ZN[p.zn][0]}${p.area&&p.zn<3?` (${esc(p.area)})`:''} · ${raName(p.ra)}<br>${Math.round(p.nw.d).toLocaleString()} km from ${esc(p.nw.w.name)}</span>${view==='del'&&p.dn?`<br><b>${p.dn} consignment${p.dn>1?'s':''}</b> · avg ${money(p.dc/p.dn)}`:''}`,e));
+  c.addEventListener('pointerenter',e=>showTip(`<b>${p.pc}</b> · ${p.st}${p.kind!=='D'?' · PO boxes / business only':''}${p.inset?' · shown out of position':''}<br>${esc(p.names)}${p.n>4?` <span class="m">+${p.n-4} more</span>`:''}<br><span class="m">${ZN[p.zn][0]}${p.area&&p.zn<3?` (${esc(p.area)})`:''} · ${raName(p.ra)}<br>${Math.round(p.nw.d).toLocaleString()} km from ${esc(p.nw.w.name)}</span>${view==='del'&&p.dn?`<br><b>${p.dn} consignment${p.dn>1?'s':''}</b> · avg ${money(p.dc/p.dn)}`:''}${view==='ord'&&p.on?`<br><b>${p.on} matched order${p.on>1?'s':''}</b> · charged ${money(p.och)} vs cost ${money(p.oco)}`:''}`,e));
   c.addEventListener('pointermove',moveTip);c.addEventListener('pointerleave',()=>tip.hidden=true);
   c.addEventListener('click',()=>pick(p));});
 const STAR='M0,-9L2.6,-3.3L8.6,-2.8L4,1.2L5.3,7.3L0,4.2L-5.3,7.3L-4,1.2L-8.6,-2.8L-2.6,-3.3Z';
@@ -233,7 +278,7 @@ WH.forEach(w=>{w.xy=proj(w.lon,w.lat);const grp=el('g',{class:'wh'});grp.append(
 let k=1,tx=0,ty=0,base=1;
 const X0=(108.6-112)*kx*100,W=(162-112)*kx*100-X0,H=(46.5-9.5)*100;   // room either side for the remote-island boxes and warehouse labels
 function draw(){const z=k/base,f=Math.pow(z,0.4);
-  PC.forEach(p=>{const s=p.el.classList.contains('sel');const r=view==='del'?(2.2+Math.sqrt(p.dn||0)*1.5)+(s?2:0):(s?6:3.1);p.el.setAttribute('r',r*f/k);});
+  PC.forEach(p=>{const s=p.el.classList.contains('sel');const n=view==='del'?p.dn:view==='ord'?p.on:0;const r=view==='pc'?(s?6:3.1):(2.2+Math.sqrt(n||0)*1.5)+(s?2:0);p.el.setAttribute('r',r*f/k);});
   const tr=xy=>`translate(${xy[0]},${xy[1]}) scale(${1/k})`;
   cities.forEach(c=>c.grp.setAttribute('transform',tr(c.xy)));WH.forEach(w=>w.grp.setAttribute('transform',tr(w.xy)));PC.forEach(p=>{if(p.ig)p.ig.setAttribute('transform',tr(p.xy));});labels.forEach(l=>l.t.setAttribute('transform',`translate(${l.xy[0]},${l.xy[1]}) scale(${1/k})`));
   svg.classList.toggle('minor-off',z<1.8);   // cities in the crowded south-east appear once zoomed in
@@ -263,8 +308,8 @@ function buildChips(){on=classes().map(()=>true);raBox.innerHTML='';
     b.onclick=()=>{on[i]=!on[i];if(!on.some(Boolean))on[i]=true;apply();};raBox.append(b);});
   recolour();
   document.getElementById('m-zone').setAttribute('aria-pressed',mode==='zone');document.getElementById('m-ra').setAttribute('aria-pressed',mode==='ra');}
-function recolour(){PC.forEach(p=>{const v=view==='del'?`var(${ZN[p.zn][1]})`:`var(${varOf(clsOf(p))})`;p.el.style.fill=v;if(p.kind!=='D')p.el.style.stroke=v;});}
-function apply(){if(view==='del'){applyDel();return;}[...raBox.children].forEach((b,i)=>b.setAttribute('aria-pressed',on[i]));
+function recolour(){PC.forEach(p=>{const v=view!=='pc'?`var(${ZN[p.zn][1]})`:`var(${varOf(clsOf(p))})`;p.el.style.fill=v;if(p.kind!=='D')p.el.style.stroke=v;});}
+function apply(){if(view==='del'){applyDel();return;}if(view==='ord'){renderOrders();return;}[...raBox.children].forEach((b,i)=>b.setAttribute('aria-pressed',on[i]));
   const po=document.getElementById('showpo').checked,ok=p=>on[clsOf(p)]&&(po||p.kind==='D');
   const vis=PC.filter(ok);PC.forEach(p=>{p.el.style.display=ok(p)?'':'none';if(p.ig)p.ig.style.display=ok(p)?'':'none';});
   document.getElementById('s-pc').textContent=vis.length.toLocaleString();
@@ -305,11 +350,44 @@ function applyDel(){
     li.innerHTML=`<b>${p.pc}</b><span>${esc(p.names.split(', ')[0])} <span class="m">${p.st}</span></span><span class="m">avg ${money(p.dc/p.dn)}</span><span>${p.dn}</span>`;
     li.onclick=()=>flyTo(p);li.onkeydown=e=>{if(e.key==='Enter')flyTo(p);};top.append(li);});
   draw();}
-function setView(v){view=v;document.getElementById('t-del').setAttribute('aria-selected',v==='del');document.getElementById('t-pc').setAttribute('aria-selected',v==='pc');
-  document.getElementById('p-del').hidden=v!=='del';document.getElementById('p-pc').hidden=v!=='pc';
+function setView(v){view=v;['del','ord','pc'].forEach(x=>{document.getElementById('t-'+x).setAttribute('aria-selected',v===x);document.getElementById('p-'+x).hidden=v!==x;});
   try{localStorage.setItem('auView',v);}catch(e){}recolour();apply();draw();}
-document.getElementById('t-del').onclick=()=>setView('del');document.getElementById('t-pc').onclick=()=>setView('pc');
-try{const v=localStorage.getItem('auView');if(v==='pc')view='pc';}catch(e){}
+document.getElementById('t-del').onclick=()=>setView('del');document.getElementById('t-pc').onclick=()=>setView('pc');document.getElementById('t-ord').onclick=()=>setView('ord');
+try{const v=localStorage.getItem('auView');if(v==='pc'||v==='ord')view=v;}catch(e){}
+/* matched orders */
+const MO=MD.map(([pi,wi,ci,ch,co,tot,cogs,date,ninv,nsh,skus,kg,vol,cub,type,inv])=>({p:PC[pi],wi,ci,ch,co:co*1.1,tot,cogs,date,ninv,nsh,skus,kg,vol,cub,type,inv}));
+{const w=document.getElementById('o-wh');WH.forEach((x,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`${x.st} · ${x.name}`;w.append(o);});
+ const c=document.getElementById('o-car');CARS.forEach((x,i)=>{if(!MO.some(o=>o.ci===i))return;const o=document.createElement('option');o.value=i;o.textContent=tcase(x);c.append(o);});
+ document.getElementById('o-cnt').textContent=`${MO.length.toLocaleString()} customers, ${MO.reduce((s,o)=>s+o.ninv,0).toLocaleString()} invoices and ${MO.reduce((s,o)=>s+o.nsh,0).toLocaleString()} shipments`;}
+let oSort={k:'date',dir:-1},oLimit=200;
+function renderOrders(){
+  const q=document.getElementById('o-q').value.trim().toLowerCase(),zn=document.getElementById('o-zn').value,wh=document.getElementById('o-wh').value,car=document.getElementById('o-car').value,loss=document.getElementById('o-loss').checked;
+  let L=MO.filter(o=>(zn===''||o.p.zn===+zn)&&(wh===''||o.wi===+wh)&&(car===''||o.ci===+car)&&(!loss||o.ch<o.co)
+    &&(!q||o.p.pc.includes(q)||o.p.names.toLowerCase().includes(q)||o.skus.toLowerCase().includes(q)||o.inv.toLowerCase().includes(q)));
+  PC.forEach(p=>{p.on=0;p.och=0;p.oco=0;});L.forEach(o=>{o.p.on++;o.p.och+=o.ch;o.p.oco+=o.co;});
+  PC.forEach(p=>{p.el.style.display=p.on?'':'none';if(p.ig)p.ig.style.display=p.on?'':'none';});
+  const ch=L.reduce((s,o)=>s+o.ch,0),co=L.reduce((s,o)=>s+o.co,0),lossN=L.filter(o=>o.ch<o.co).length;
+  const sg=v=>(v>=0?'+':'−')+money0(Math.abs(v));
+  document.getElementById('ostats').innerHTML=`<div><b>${L.length.toLocaleString()}</b><span>matched orders</span></div><div><b>${money0(ch)}</b><span>we charged</span></div><div><b>${money0(co)}</b><span>cost us</span></div><div><b class="${ch-co>=0?'g':'w'}">${sg(ch-co)}</b><span>charged minus cost</span></div><div><b>${L.length?Math.round(lossN/L.length*100):0}%</b><span>charged less than cost</span></div>`;
+  const grp=(key,label,order)=>{const m=new Map();L.forEach(o=>{const k=key(o);const g=m.get(k)||{n:0,ch:0,co:0};g.n++;g.ch+=o.ch;g.co+=o.co;m.set(k,g);});
+    let r=[...m.entries()];r.sort(order||((a,b)=>b[1].n-a[1].n));return r.map(([k,g])=>`<tr><td>${label(k)}</td><td>${g.n.toLocaleString()}</td><td>${money(g.ch/g.n)}</td><td>${money(g.co/g.n)}</td><td class="${g.ch>=g.co?'g':'w'}">${g.ch>=g.co?'+':'−'}${money(Math.abs(g.ch-g.co)/g.n)}</td></tr>`).join('');};
+  document.querySelector('#o-zone tbody').innerHTML=grp(o=>o.p.zn,k=>`<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(${ZN[k][1]});margin-right:6px"></span>${ZN[k][0]}`,(a,b)=>a[0]-b[0]);
+  document.querySelector('#o-whs tbody').innerHTML=grp(o=>o.wi,k=>k<0?'Other senders':`${WH[k].st} · ${esc(WH[k].name)}`);
+  const val=o=>({date:o.date,pc:o.p.pc,wh:o.wi,car:o.ci,ch:o.ch,co:o.co,d:o.ch-o.co})[oSort.k];
+  L.sort((a,b)=>{const x=val(a),y=val(b);return (x<y?-1:x>y?1:0)*oSort.dir;});
+  document.querySelectorAll('#otab th').forEach(th=>th.setAttribute('aria-sort',th.dataset.k===oSort.k?(oSort.dir>0?'ascending':'descending'):'none'));
+  const tb=document.querySelector('#otab tbody');tb.innerHTML='';
+  L.slice(0,oLimit).forEach(o=>{const tr=document.createElement('tr');const d=o.ch-o.co;
+    tr.innerHTML=`<td class="l">${o.date?o.date.slice(8)+'/'+o.date.slice(5,7):'–'}<span class="s">${esc(o.inv.split(';')[0])}${o.ninv>1?` +${o.ninv-1}`:''}</span></td>
+      <td class="l">${o.p.pc} ${esc(o.p.names.split(', ')[0])}<span class="s" title="${esc(o.skus)}">${esc(o.skus)||'&nbsp;'}</span></td>
+      <td class="l">${o.wi<0?'Other':esc(WH[o.wi].name)}</td><td class="l">${o.ci<0?'–':esc(tcase(CARS[o.ci]))}${o.nsh>1?`<span class="s">${o.nsh} shipments</span>`:''}</td>
+      <td>${money(o.ch)}</td><td>${money(o.co)}</td><td class="${d>=0?'g':'w'}">${d>=0?'+':'−'}${money(Math.abs(d))}</td>`;
+    tr.onclick=()=>flyTo(o.p);tb.append(tr);});
+  const more=document.getElementById('o-more');more.hidden=L.length<=oLimit;more.textContent=`Show more (${(L.length-oLimit).toLocaleString()} left)`;
+  draw();}
+document.querySelectorAll('#otab th').forEach(th=>th.onclick=()=>{const k=th.dataset.k;oSort=oSort.k===k?{k,dir:-oSort.dir}:{k,dir:['date','ch','co','d'].includes(k)?-1:1};renderOrders();});
+document.getElementById('o-more').onclick=()=>{oLimit+=300;renderOrders();};
+['o-q','o-zn','o-wh','o-car','o-loss'].forEach(id=>document.getElementById(id).addEventListener(id==='o-q'?'input':'change',()=>{oLimit=200;renderOrders();}));
 /* search + pick */
 let sel=null;
 function pick(p){if(sel)sel.el.classList.remove('sel');sel=p;p.el.classList.add('sel');dg.append(p.el);
@@ -319,7 +397,7 @@ function pick(p){if(sel)sel.el.classList.remove('sel');sel=p;p.el.classList.add(
   draw();}
 function flyTo(p){const b=svg.getBoundingClientRect();k=base*8;tx=b.width/2-p.xy[0]*k;ty=b.height/2-p.xy[1]*k;pick(p);}
 document.getElementById('q').addEventListener('keydown',e=>{if(e.key!=='Enter')return;const v=e.target.value.trim().toLowerCase();if(!v)return;
-  const p=PC.find(p=>p.pc===v.padStart(4,'0')&&(view!=='del'||p.dn))||PC.find(p=>p.pc===v.padStart(4,'0'))||PC.find(p=>p.names.toLowerCase().split(', ').includes(v))||PC.find(p=>p.names.toLowerCase().includes(v));
+  const p=PC.find(p=>p.pc===v.padStart(4,'0')&&(view==='pc'||(view==='del'?p.dn:p.on)))||PC.find(p=>p.pc===v.padStart(4,'0'))||PC.find(p=>p.names.toLowerCase().split(', ').includes(v))||PC.find(p=>p.names.toLowerCase().includes(v));
   if(p)flyTo(p);else{e.target.setCustomValidity('No Australian postcode or suburb by that name');e.target.reportValidity();setTimeout(()=>e.target.setCustomValidity(''),1800);}});
 function flyWh(w){const b=svg.getBoundingClientRect();k=base*10;tx=b.width/2-w.xy[0]*k;ty=b.height/2-w.xy[1]*k;draw();}
 {const L=document.getElementById('whlist');WH.slice().sort((a,b)=>a.st.localeCompare(b.st)).forEach(w=>{const b=document.createElement('button');b.type='button';
