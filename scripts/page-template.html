@@ -26,7 +26,7 @@
 [hidden]{display:none!important}
 html,body{height:100%}
 body{background:var(--sea);color:var(--ink);font:15px/1.5 var(--body)}
-.wrap{display:grid;grid-template-columns:minmax(0,1fr) var(--side,clamp(400px,36vw,620px));height:100%}
+.wrap{display:grid;grid-template-columns:minmax(0,1fr) var(--side,clamp(400px,42vw,720px));height:100%}
 .mapbox{position:relative;min-width:0;min-height:0}
 #map{width:100%;height:100%;display:block;cursor:grab;touch-action:none}
 #map:active{cursor:grabbing}
@@ -55,7 +55,7 @@ body{background:var(--sea);color:var(--ink);font:15px/1.5 var(--body)}
 .zoom button:focus-visible,.chip:focus-visible,input:focus-visible{outline:2px solid var(--hi);outline-offset:2px}
 aside{background:var(--panel);border-left:1px solid var(--line);min-height:0;overflow:auto;position:relative}
 .wrap{position:relative}
-.grip{position:absolute;top:0;bottom:0;right:var(--side,clamp(400px,36vw,620px));width:14px;margin-right:-7px;cursor:col-resize;z-index:15;touch-action:none;display:flex;align-items:center;justify-content:center}
+.grip{position:absolute;top:0;bottom:0;right:var(--side,clamp(400px,42vw,720px));width:14px;margin-right:-7px;cursor:col-resize;z-index:15;touch-action:none;display:flex;align-items:center;justify-content:center}
 .grip::before{content:'';position:absolute;top:0;bottom:0;left:6px;width:2px;background:transparent;transition:background .15s}
 .grip::after{content:'';width:6px;height:44px;border-radius:3px;background:var(--panel);border:1px solid var(--line);box-shadow:0 1px 4px rgb(0 0 0 / .12);position:relative;
   background-image:radial-gradient(circle,var(--muted) 1px,transparent 1.3px);background-size:4px 6px;background-position:center}
@@ -80,7 +80,8 @@ input[type=search]{width:100%;padding:10px 12px;border:1px solid var(--line);bor
 .ostats b{display:block;font:700 22px/1.2 var(--display);font-variant-numeric:tabular-nums}
 .ostats span{font-size:12px;color:var(--muted)}
 .g{color:var(--good)}.w{color:var(--bad)}
-.ofilt3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.ofilt3{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+#p-rate .ofilt3{grid-template-columns:1fr 1.6fr}
 .ofilt3 input[type=search],.ofilt3 .check{grid-column:1/-1}
 .ofilt3 select,.ofilt3 input[type=search]{padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--land);color:var(--ink);font:inherit;font-size:14px;min-width:0}
 .check{display:flex;gap:8px;align-items:center;font-size:14px}
@@ -94,7 +95,8 @@ input[type=search]{width:100%;padding:10px 12px;border:1px solid var(--line);bor
 #otab td:first-child,#otab th:first-child{padding-left:0}
 #otab tbody tr{cursor:pointer}
 #otab tbody tr:hover{background:var(--soft)}
-#otab td .s{display:block;font-size:11.5px;color:var(--muted);max-width:200px;overflow:hidden;text-overflow:ellipsis}
+#otab td .s.w2{white-space:normal;max-width:96px}
+#otab td .s{display:block;font-size:11.5px;color:var(--muted);max-width:150px;overflow:hidden;text-overflow:ellipsis}
 td.w,td.g{font-weight:600}
 .linkbtn{background:none;border:0;color:var(--ink);text-decoration:underline;font:inherit;cursor:pointer;padding:0;align-self:flex-start}
 .seg{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
@@ -142,8 +144,12 @@ th:first-child,td:first-child{text-align:left}
 .note a{color:inherit}
 .tip{position:fixed;pointer-events:none;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:7px 10px;font-size:13px;line-height:1.35;box-shadow:0 4px 14px rgb(0 0 0 / .12);z-index:20;max-width:280px}
 .tip .m{color:var(--muted)}
+.panel,.panel>*,.sect,.sect>*{min-width:0}
+.tabs{overflow-x:auto;scrollbar-width:none}
 @media (max-width:820px){
-  .wrap{grid-template-columns:1fr;grid-template-rows:60vh auto;height:auto}
+  .ofilt3{grid-template-columns:1fr 1fr}
+  #p-rate .ofilt3{grid-template-columns:1fr}
+  .wrap{grid-template-columns:minmax(0,1fr);grid-template-rows:60vh auto;height:auto}
   aside{border-left:0;border-top:1px solid var(--line);overflow:visible}
   .grip{display:none}
 }
@@ -207,7 +213,13 @@ th:first-child,td:first-child{text-align:left}
           <select id="o-zn" aria-label="Zone"><option value="">All zones</option><option value="0">Metro</option><option value="1">Outer metro</option><option value="2">Regional</option></select>
           <select id="o-wh" aria-label="Warehouse"><option value="">All warehouses</option></select>
           <select id="o-car" aria-label="Carrier"><option value="">All carriers</option></select>
+          <select id="o-sz" aria-label="Freight size"><option value="">All sizes</option><option value="1">Small</option><option value="2">Medium</option><option value="3">Large</option><option value="4">XL</option><option value="5">XXL</option></select>
           <label class="check"><input type="checkbox" id="o-loss"> Only orders where we charged less than it cost</label>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <h2>Charged vs cost by freight size</h2>
+          <div style="overflow-x:auto"><table id="o-size"><thead><tr><th>Size</th><th>Orders</th><th>Avg charged</th><th>Website price</th><th>Avg cost</th><th>Gap</th></tr></thead><tbody></tbody></table></div>
+          <p class="note" style="margin:0">Each order is sized the way the website does it: every product gets a 1–5 score from its longest side, cubic weight and actual weight, and the order takes the size of its biggest product. "Website price" is the Standard rate on the shipping sheet for that size, zone and the warehouse it actually shipped from.</p>
         </div>
         <div style="display:flex;flex-direction:column;gap:8px">
           <h2>Charged vs cost by zone</h2>
@@ -217,14 +229,14 @@ th:first-child,td:first-child{text-align:left}
           <h2>Charged vs cost by warehouse</h2>
           <div style="overflow-x:auto"><table id="o-whs"><thead><tr><th>Warehouse</th><th>Orders</th><th>Avg charged</th><th>Avg cost</th><th>Gap</th></tr></thead><tbody></tbody></table></div>
         </div>
-        <div class="otable"><table id="otab"><thead><tr><th data-k="date" class="l">Date</th><th data-k="pc" class="l">Delivered to</th><th data-k="wh" class="l">From</th><th data-k="car" class="l">Carrier</th><th data-k="ch">We charged</th><th data-k="co">Cost us</th><th data-k="d">Charged − cost</th></tr></thead><tbody></tbody></table></div>
+        <div class="otable"><table id="otab"><thead><tr><th data-k="date" class="l">Date</th><th data-k="pc" class="l">Delivered to</th><th data-k="wh" class="l">From</th><th data-k="web" title="What the website's rate card charges for this order">Website</th><th data-k="ch" title="Freight we charged the customer">Charged</th><th data-k="co" title="What the carrier charged us">Cost</th><th data-k="d" title="Charged minus cost">Gap</th></tr></thead><tbody></tbody></table></div>
         <button type="button" class="linkbtn" id="o-more" hidden>Show more</button>
-        <p class="note">Matched by customer name across the three reports ("3 of 3" in column F): <span id="o-cnt"></span>. A customer with several orders in the period counts as one row, with their charges and shipments added together. "Cost us" uses the invoiced cost where the carrier has billed it and the carrier's estimate where it hasn't yet (the match file's own summary counts unbilled shipments as $0), plus 10% GST. "We charged" is the freight charged on the invoices. Click an order to find it on the map. Customer names, emails and phone numbers are not included.</p>
+        <p class="note">Website is what the website's rate card charges for the order's size; Charged is the freight on the invoices; Cost is what the carriers charged us; Gap is Charged minus Cost. Matched by customer name across the three reports ("3 of 3" in column F): <span id="o-cnt"></span>. A customer with several orders in the period counts as one row, with their charges and shipments added together. "Cost us" uses the invoiced cost where the carrier has billed it and the carrier's estimate where it hasn't yet (the match file's own summary counts unbilled shipments as $0), plus 10% GST. "We charged" is the freight charged on the invoices. Click an order to find it on the map. Customer names, emails and phone numbers are not included.</p>
       </section>
       <section id="p-rate" role="tabpanel" aria-labelledby="t-rate" class="sect" hidden>
         <p class="sub" style="margin:0">What the website charges customers for freight, from the October 2025 shipping sheet. Pick a product size and service; the map colours every postcode by the price a customer sees.</p>
         <div class="seg" role="group" aria-label="Freight size" id="r-size"></div>
-        <div class="ofilt3" style="grid-template-columns:1fr 1.6fr">
+        <div class="ofilt3">
           <div class="seg" role="group" aria-label="Service" id="r-svc"></div>
           <select id="r-from" aria-label="Ship from"><option value="">Ships from the website's first-choice warehouse</option></select>
         </div>
@@ -267,6 +279,7 @@ th:first-child,td:first-child{text-align:left}
 const STATES=__STATES__;
 const WH=__WH__.map(([st,name,addr,pc,lat,lon])=>({st,name,addr,pc,lat,lon}));
 const PC=__PC__.map(([pc,lat,lon,st,ra,names,n,z,area,kind])=>({pc,lat,lon,st,ra,names,n,zn:z<0?4:z,area,kind}));
+const SZ=['Small','Medium','Large','XL','XXL'];
 const OD=__ORD__,CARS=OD.CARS,MD=__MATCH__,WR=__WEB__;
 let view='del';
 // remote postcodes drawn in boxes at the map's edge, out of their true position
@@ -395,14 +408,14 @@ function setView(v){view=v;['del','ord','rate','pc'].forEach(x=>{document.getEle
 document.getElementById('t-del').onclick=()=>setView('del');document.getElementById('t-pc').onclick=()=>setView('pc');document.getElementById('t-ord').onclick=()=>setView('ord');document.getElementById('t-rate').onclick=()=>setView('rate');
 try{const v=localStorage.getItem('auView');if(['pc','ord','rate'].includes(v))view=v;}catch(e){}
 /* matched orders */
-const MO=MD.map(([pi,wi,ci,ch,co,tot,cogs,date,ninv,nsh,skus,kg,vol,cub,type,inv])=>({p:PC[pi],wi,ci,ch,co:co*1.1,tot,cogs,date,ninv,nsh,skus,kg,vol,cub,type,inv}));
+const MO=MD.map(([pi,wi,ci,ch,co,tot,cogs,date,ninv,nsh,skus,kg,vol,cub,type,inv,sz,ws,wp,svc,fl])=>({p:PC[pi],wi,ci,ch,co:co*1.1,tot,cogs,date,ninv,nsh,skus,kg,vol,cub,type,inv,sz,ws,wp,svc,fl,web:!sz?null:svc==='p'?wp:ws}));
 {const w=document.getElementById('o-wh');WH.forEach((x,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`${x.st} · ${x.name}`;w.append(o);});
  const c=document.getElementById('o-car');CARS.forEach((x,i)=>{if(!MO.some(o=>o.ci===i))return;const o=document.createElement('option');o.value=i;o.textContent=tcase(x);c.append(o);});
  document.getElementById('o-cnt').textContent=`${MO.length.toLocaleString()} customers, ${MO.reduce((s,o)=>s+o.ninv,0).toLocaleString()} invoices and ${MO.reduce((s,o)=>s+o.nsh,0).toLocaleString()} shipments`;}
 let oSort={k:'date',dir:-1},oLimit=200;
 function renderOrders(){
-  const q=document.getElementById('o-q').value.trim().toLowerCase(),zn=document.getElementById('o-zn').value,wh=document.getElementById('o-wh').value,car=document.getElementById('o-car').value,loss=document.getElementById('o-loss').checked;
-  let L=MO.filter(o=>(zn===''||o.p.zn===+zn)&&(wh===''||o.wi===+wh)&&(car===''||o.ci===+car)&&(!loss||o.ch<o.co)
+  const sz=document.getElementById('o-sz').value,q=document.getElementById('o-q').value.trim().toLowerCase(),zn=document.getElementById('o-zn').value,wh=document.getElementById('o-wh').value,car=document.getElementById('o-car').value,loss=document.getElementById('o-loss').checked;
+  let L=MO.filter(o=>(zn===''||o.p.zn===+zn)&&(wh===''||o.wi===+wh)&&(car===''||o.ci===+car)&&(!loss||o.ch<o.co)&&(sz===''||o.sz===+sz)
     &&(!q||o.p.pc.includes(q)||o.p.names.toLowerCase().includes(q)||o.skus.toLowerCase().includes(q)||o.inv.toLowerCase().includes(q)));
   PC.forEach(p=>{p.on=0;p.och=0;p.oco=0;});L.forEach(o=>{o.p.on++;o.p.och+=o.ch;o.p.oco+=o.co;});
   PC.forEach(p=>{p.el.style.display=p.on?'':'none';if(p.ig)p.ig.style.display=p.on?'':'none';});
@@ -411,25 +424,28 @@ function renderOrders(){
   document.getElementById('ostats').innerHTML=`<div><b>${L.length.toLocaleString()}</b><span>matched orders</span></div><div><b>${money0(ch)}</b><span>we charged</span></div><div><b>${money0(co)}</b><span>cost us</span></div><div><b class="${ch-co>=0?'g':'w'}">${sg(ch-co)}</b><span>charged minus cost</span></div><div><b>${L.length?Math.round(lossN/L.length*100):0}%</b><span>charged less than cost</span></div>`;
   const grp=(key,label,order)=>{const m=new Map();L.forEach(o=>{const k=key(o);const g=m.get(k)||{n:0,ch:0,co:0};g.n++;g.ch+=o.ch;g.co+=o.co;m.set(k,g);});
     let r=[...m.entries()];r.sort(order||((a,b)=>b[1].n-a[1].n));return r.map(([k,g])=>`<tr><td>${label(k)}</td><td>${g.n.toLocaleString()}</td><td>${money(g.ch/g.n)}</td><td>${money(g.co/g.n)}</td><td class="${g.ch>=g.co?'g':'w'}">${g.ch>=g.co?'+':'−'}${money(Math.abs(g.ch-g.co)/g.n)}</td></tr>`).join('');};
+  {const m=new Map();L.forEach(o=>{const g=m.get(o.sz)||{n:0,ch:0,co:0,w:0,wn:0};g.n++;g.ch+=o.ch;g.co+=o.co;if(o.web!=null){g.w+=o.web;g.wn++;}m.set(o.sz,g);});
+   document.querySelector('#o-size tbody').innerHTML=[...m.entries()].sort((a,b)=>(a[0]||9)-(b[0]||9)).map(([k,g])=>`<tr><td>${k?SZ[k-1]:'Not sized'}</td><td>${g.n.toLocaleString()}</td><td>${money(g.ch/g.n)}</td><td>${g.wn?money(g.w/g.wn):'–'}</td><td>${money(g.co/g.n)}</td><td class="${g.ch>=g.co?'g':'w'}">${g.ch>=g.co?'+':'−'}${money(Math.abs(g.ch-g.co)/g.n)}</td></tr>`).join('');}
   document.querySelector('#o-zone tbody').innerHTML=grp(o=>o.p.zn,k=>`<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(${ZN[k][1]});margin-right:6px"></span>${ZN[k][0]}`,(a,b)=>a[0]-b[0]);
   document.querySelector('#o-whs tbody').innerHTML=grp(o=>o.wi,k=>k<0?'Other senders':`${WH[k].st} · ${esc(WH[k].name)}`);
-  const val=o=>({date:o.date,pc:o.p.pc,wh:o.wi,car:o.ci,ch:o.ch,co:o.co,d:o.ch-o.co})[oSort.k];
+  const val=o=>({date:o.date,pc:o.p.pc,wh:o.wi,car:o.ci,sz:o.sz,web:o.web??-1,ch:o.ch,co:o.co,d:o.ch-o.co})[oSort.k];
   L.sort((a,b)=>{const x=val(a),y=val(b);return (x<y?-1:x>y?1:0)*oSort.dir;});
   document.querySelectorAll('#otab th').forEach(th=>th.setAttribute('aria-sort',th.dataset.k===oSort.k?(oSort.dir>0?'ascending':'descending'):'none'));
   const tb=document.querySelector('#otab tbody');tb.innerHTML='';
   L.slice(0,oLimit).forEach(o=>{const tr=document.createElement('tr');const d=o.ch-o.co;
     tr.innerHTML=`<td class="l">${o.date?o.date.slice(8)+'/'+o.date.slice(5,7):'–'}<span class="s">${esc(o.inv.split(';')[0])}${o.ninv>1?` +${o.ninv-1}`:''}</span></td>
       <td class="l">${o.p.pc} ${esc(o.p.names.split(', ')[0])}<span class="s" title="${esc(o.skus)}">${esc(o.skus)||'&nbsp;'}</span></td>
-      <td class="l">${o.wi<0?'Other':esc(WH[o.wi].name)}</td><td class="l">${o.ci<0?'–':esc(tcase(CARS[o.ci]))}${o.nsh>1?`<span class="s">${o.nsh} shipments</span>`:''}</td>
+      <td class="l">${o.wi<0?'Other':esc(WH[o.wi].name)}<span class="s w2">${o.ci<0?'–':esc(tcase(CARS[o.ci]))}${o.nsh>1?` · ${o.nsh} shipments`:''}</span></td>
+      <td>${o.web==null?'–':money(o.web)}<span class="s w2">${o.sz?SZ[o.sz-1]:'not sized'}${o.svc==='p'?' · priority':''}${o.fl===2?' · product not in list':o.fl===1?' · missing size data':''}</span></td>
       <td>${money(o.ch)}</td><td>${money(o.co)}</td><td class="${d>=0?'g':'w'}">${d>=0?'+':'−'}${money(Math.abs(d))}</td>`;
     tr.onclick=()=>flyTo(o.p);tb.append(tr);});
   const more=document.getElementById('o-more');more.hidden=L.length<=oLimit;more.textContent=`Show more (${(L.length-oLimit).toLocaleString()} left)`;
   draw();}
-document.querySelectorAll('#otab th').forEach(th=>th.onclick=()=>{const k=th.dataset.k;oSort=oSort.k===k?{k,dir:-oSort.dir}:{k,dir:['date','ch','co','d'].includes(k)?-1:1};renderOrders();});
+document.querySelectorAll('#otab th').forEach(th=>th.onclick=()=>{const k=th.dataset.k;oSort=oSort.k===k?{k,dir:-oSort.dir}:{k,dir:['date','ch','co','d','sz','web'].includes(k)?-1:1};renderOrders();});
 document.getElementById('o-more').onclick=()=>{oLimit+=300;renderOrders();};
-['o-q','o-zn','o-wh','o-car','o-loss'].forEach(id=>document.getElementById(id).addEventListener(id==='o-q'?'input':'change',()=>{oLimit=200;renderOrders();}));
+['o-q','o-zn','o-wh','o-car','o-sz','o-loss'].forEach(id=>document.getElementById(id).addEventListener(id==='o-q'?'input':'change',()=>{oLimit=200;renderOrders();}));
 /* website charges */
-const SZ=['Small','Medium','Large','XL','XXL'],RZ=['Metro','Outer metro','Regional'];
+const RZ=['Metro','Outer metro','Regional'];
 const BR=[12.5,19.5,29.5,50,99,199,Infinity],BL=['up to $12.50','$13–$19.50','$20–$29.50','$30–$50','$51–$99','$100–$199','$200+'];
 let rSize=0,rSvc='standard',rFrom='';
 try{const s=JSON.parse(localStorage.getItem('auRate')||'{}');if(s.size>=0&&s.size<5)rSize=s.size;if(s.svc)rSvc=s.svc;}catch(e){}
