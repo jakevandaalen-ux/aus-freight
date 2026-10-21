@@ -346,7 +346,7 @@ th:first-child,td:first-child{text-align:left}
           </details>
         </form>
         <div class="result" id="out" aria-live="polite"></div>
-        <p class="note">Website charges come from the October 2025 shipping sheet for the order's size (the website's 1–5 score: the highest of longest side, cubic weight at 250 kg/m³ and actual weight, taken from the order's biggest item) and include GST. Carrier costs are not rate-card prices: the rate cards can't be priced without each carrier's postcode zones and surcharges. Instead each carrier's figure is the median that carrier actually charged us (invoiced, or the estimate where not yet billed, plus GST) on past matched orders of the same website size, sent as one shipment from the same warehouse to the same state and Australia Post zone, with the longest item on the same side of 1.05 m and a similar chargeable weight (the greater of weight or cubic × 250). If there aren't at least six, it widens the weight range, then to any destination in that zone, then to any warehouse. Australia Post is ruled out for items over 1.05 m long, 22 kg or 0.25 m³ (its parcel limits). Product sizes, prices and costs come from your product export (20 October 2026).</p>
+        <p class="note">Website charges come from the October 2025 shipping sheet for the order's size (the website's 1–5 score: the highest of longest side, cubic weight at 250 kg/m³ and actual weight, taken from the order's biggest item) and include GST. Australia Post is priced from your contract rates (pricing schedule dated 18 May 2026, GST inclusive): the greater of dead weight or cubic weight (250 kg/m³) per parcel, up to 22 kg, on the cheapest of the Melbourne, Brisbane, Adelaide and Perth accounts the warehouse uses (Brendale, Campbellfield, Adelaide and Wangara each use their own; Moorebank, Moonah and Fyshwick use all four), plus an 11.5% fuel surcharge (October 2026, worked out from your shipments; it changes monthly). Checked against 3,597 past Australia Post shipments, it matches the carrier's estimate within 3% on 98.6% of them. The other carriers can't be priced from their rate cards yet, because their postcode zones and surcharges weren't in the exports, so each of their figures is the median that carrier actually charged us (invoiced, or the estimate where not yet billed, plus GST) on past matched orders of the same website size, sent as one shipment from the same warehouse to the same state and Australia Post zone, with the longest item on the same side of 1.05 m and a similar chargeable weight (the greater of weight or cubic × 250). If there aren't at least six, it widens the weight range, then to any destination in that zone, then to any warehouse. Australia Post is ruled out for items over 1.05 m long, 22 kg or 0.25 m³ (its parcel limits). Product sizes, prices and costs come from your product export (20 October 2026).</p>
       </section>
       <section id="p-pc" role="tabpanel" aria-labelledby="t-pc" class="sect" hidden>
       <div class="stats">
@@ -378,9 +378,9 @@ th:first-child,td:first-child{text-align:left}
 <script>
 const STATES=__STATES__;
 const WH=__WH__.map(([st,name,addr,pc,lat,lon])=>({st,name,addr,pc,lat,lon}));
-const PC=__PC__.map(([pc,lat,lon,st,ra,names,n,z,area,kind])=>({pc,lat,lon,st,ra,names,n,zn:z<0?4:z,area,kind}));
+const PC=__PC__.map(([pc,lat,lon,st,ra,names,n,z,area,kind],i)=>({i,pc,lat,lon,st,ra,names,n,zn:z<0?4:z,area,kind}));
 const SZ=['Small','Medium','Large','XL','XXL'];
-const COST=__COST__,PRODUCTS=__PRODUCTS__,SUBS=__SUBS__;
+const COST=__COST__,PRODUCTS=__PRODUCTS__,SUBS=__SUBS__,AP=__AUSPOST__;
 const OD=__ORD__,CARS=OD.CARS,MD=__MATCH__,WR=__WEB__;
 let view='del';
 // remote postcodes drawn in boxes at the map's edge, out of their true position
@@ -682,6 +682,20 @@ function similar(p,wi,ck,sz,longest){CL=CL||CLEAN();const z=Math.min(p.zn,2),loc
         const cars=[...by.entries()].filter(([c,a])=>a.length>=2&&fits(c)).map(([c,a])=>({ci:c,name:tcase(CARS[c]),med:med(a),n:a.length,lo:Math.min(...a),hi:Math.max(...a)})).sort((a,b)=>a.med-b.med);
         return {cars,n:L.length,label,lo:Math.max(0,lo),hi,anyW:w==null};}}}
   return null;}
+/* Australia Post contract rates (18 May 2026, incl. GST); fuel surcharge added on top */
+const APN={C:'Capital',M:'Metro',R:'Remote'};
+function apCat(lz,p){const c=AP.cls[p.i];if(p.st===AP.home[lz])return c==='C'?'Same State|Local':'Same State|'+APN[c];return (AP.near[lz].includes(p.st)?'Near State':'Distant State')+'|'+APN[c];}
+function apRate(lz,svc,p,kg){const r=AP.t[lz][svc][apCat(lz,p)];if(!r||r[0]==null)return null;
+  if(kg<=0.25)return r[0];if(kg<=0.5)return r[1];if(kg<=1)return r[2];if(kg<=3)return r[3];if(kg<=5)return r[4];if(kg<=22)return r[5]+r[7]*Math.ceil(kg);return null;}
+const LZN={V0:'Melbourne',Q0:'Brisbane',S0:'Adelaide',W0:'Perth'};
+function apQuote(p,whSt,its){
+  const big=its.find(i=>Math.max(i.l,i.w,i.h)>1.05||(i.kg||0)>22||i.l*i.w*i.h>0.25);
+  if(big)return {why:`${big.name} is ${Math.max(big.l,big.w,big.h).toFixed(2)} m, ${big.kg||0} kg, ${(big.l*big.w*big.h).toFixed(3)} m³. Australia Post takes up to 1.05 m, 22 kg and 0.25 m³ per parcel.`};
+  const kg=its.reduce((s,i)=>s+i.qty*(i.kg||0),0),cub=its.reduce((s,i)=>s+i.qty*i.l*i.w*i.h,0),ck=Math.max(kg,cub*250);
+  const n=Math.max(1,Math.ceil(ck/22-1e-9)),per=ck/n;let best=null;
+  for(const lz of AP.acc[whSt]||[]){const a=apRate(lz,'pp',p,per),b=apRate(lz,'ex',p,per);if(a==null)continue;
+    const c=a*n*(1+AP.fuel),e=b==null?null:b*n*(1+AP.fuel);if(!best||c<best.cost)best={cost:c,ex:e,lz,cat:apCat(lz,p),n,per};}
+  return best||{why:'No Australia Post rate for this address.'};}
 let carPick=null,carKey='';const WHCARS={};
 document.getElementById('out').addEventListener('click',e=>{const o=e.target.closest('.opt');if(!o||o.disabled)return;carPick=+o.dataset.ci;calc();});
 function calc(){if(view!=='calc')return;
@@ -706,7 +720,11 @@ function calc(){if(view!=='calc')return;
   const charge=svc==='priority'?pri:std;
   const lb2=longest>1.05;const big=its.find(i=>Math.max(i.l,i.w,i.h)>1.05||(i.kg||0)>22||i.l*i.w*i.h>0.25);
   const sim=similar(p,wi,ck,sz,longest);
-  const cars=sim?sim.cars.map(c=>({...c,off:/AUSTRALIA POST/i.test(CARS[c.ci])&&big?`Not suitable: ${esc(big.name)} is ${Math.max(big.l,big.w,big.h).toFixed(2)} m, ${big.kg||0} kg (Australia Post takes up to 1.05 m, 22 kg, 0.25 m³)`:null})):[];
+  const cars=sim?sim.cars.filter(c=>!/AUSTRALIA POST/i.test(CARS[c.ci])).map(c=>({...c,off:null})):[];
+  const apq=apQuote(p,w.st,its);
+  if(apq.cost!=null)cars.push({ci:-2,name:'Australia Post · rate card',med:apq.cost,card:true,apq});
+  else cars.push({ci:-2,name:'Australia Post · rate card',off:esc(apq.why),card:true});
+  cars.sort((a,b)=>(a.off?1:0)-(b.off?1:0)||(a.med??1e9)-(b.med??1e9));
   const avail=cars.filter(c=>!c.off);
   const key=[p.pc,wi,sz,lb2,Math.round(ck)].join('|');if(key!==carKey){carKey=key;carPick=null;}
   if(carPick==null||!avail.some(c=>c.ci===carPick))carPick=avail.length?avail[0].ci:null;
@@ -714,18 +732,19 @@ function calc(){if(view!=='calc')return;
   const value=its.reduce((s,i)=>s+i.qty*i.price,0),pcost=its.reduce((s,i)=>s+i.qty*i.buy,0),missing=its.filter(i=>!(i.l&&i.w&&i.h)).length;
   let msg='';
   if(chosen&&charge!=null){const gap=charge-chosen.med;
-    msg=gap>=0?`<p class="msg g">The website's ${svc} charge of ${money(charge)} covers ${esc(chosen.name)}'s typical ${money(chosen.med)} with ${money(gap)} to spare.</p>`
-      :`<p class="msg w">The website's ${svc} charge of ${money(charge)} is ${money(-gap)} short of ${esc(chosen.name)}'s typical ${money(chosen.med)}.</p>`;}
+    const what=chosen.card?`the Australia Post rate of ${money(chosen.med)}`:`${esc(chosen.name)}'s typical ${money(chosen.med)}`;
+    msg=gap>=0?`<p class="msg g">The website's ${svc} charge of ${money(charge)} covers ${what} with ${money(gap)} to spare.</p>`
+      :`<p class="msg w">The website's ${svc} charge of ${money(charge)} is ${money(-gap)} short of ${what}.</p>`;}
   let marg='';
   if(value>0&&chosen){const pre=value/1.1-pcost,after=pre+(charge||0)/1.1-chosen.med/1.1;
-    marg=`<dl class="kv"><dt>Order value (incl. GST)</dt><dd>${money(value)}</dd><dt>Product cost (ex GST)</dt><dd>${money(pcost)}</dd><dt>Margin before freight (ex GST)</dt><dd>${pre<0?'−':''}${money(Math.abs(pre))}</dd><div class="sep"></div><dt>Margin after the ${svc} charge and ${esc(chosen.name)}</dt><dd class="${after>=0?'g':'w'}" style="font-weight:600">${after<0?'−':''}${money(Math.abs(after))}</dd></dl>`;}
+    marg=`<dl class="kv"><dt>Order value (incl. GST)</dt><dd>${money(value)}</dd><dt>Product cost (ex GST)</dt><dd>${money(pcost)}</dd><dt>Margin before freight (ex GST)</dt><dd>${pre<0?'−':''}${money(Math.abs(pre))}</dd><div class="sep"></div><dt>Margin after the ${svc} charge and ${esc(chosen.card?'Australia Post':chosen.name)}</dt><dd class="${after>=0?'g':'w'}" style="font-weight:600">${after<0?'−':''}${money(Math.abs(after))}</dd></dl>`;}
   out.innerHTML=head+`
    <div class="webp"><div class="${svc==='standard'?'on':''}"><span>Website Standard · ${SZ[sz]}</span><b>${std==null?'–':money(std)}</b><span>${esc(es||'')}</span></div>
      <div class="${svc==='priority'?'on':''}"><span>Website Priority · ${SZ[sz]}</span><b>${pri==null?'blank':money(pri)}</b><span>${esc(ep||'')}</span></div></div>
-   <h2 style="font-size:16px;margin:0">What orders like this have cost us</h2>
-   ${sim?`<div class="opts" role="radiogroup" aria-label="Carrier">${cars.map(c=>`<button type="button" class="opt" role="radio" data-ci="${c.ci}" aria-checked="${chosen&&c.ci===chosen.ci}"${c.off?' disabled':''}><span class="pick"><i class="dot"></i>${esc(c.name)}${avail[0]&&c.ci===avail[0].ci?'<em class="tag">Cheapest</em>':''}</span><b>${c.off?'Not suitable':money(c.med)}</b><small>${c.off||`median of ${c.n} shipments · ${money0(c.lo)}–${money0(c.hi)}`}</small></button>`).join('')}</div>
-     <p class="note" style="margin:0">Based on ${sim.n} past ${SZ[sz]} orders ${lb2?'with an item over 1.05 m':'with everything under 1.05 m'}, ${esc(sim.label)}${sim.anyW?'':`, ${Math.round(sim.lo)}–${Math.round(sim.hi)} kg chargeable`}, each sent as one shipment. Prices include GST.</p>`
-     :'<p class="msg">Not enough past shipments like this to estimate a cost.</p>'}
+   <h2 style="font-size:16px;margin:0">What it costs us to send</h2>
+   ${sim?`<div class="opts" role="radiogroup" aria-label="Carrier">${cars.map(c=>`<button type="button" class="opt" role="radio" data-ci="${c.ci}" aria-checked="${chosen&&c.ci===chosen.ci}"${c.off?' disabled':''}><span class="pick"><i class="dot"></i>${esc(c.name)}${avail[0]&&c.ci===avail[0].ci?'<em class="tag">Cheapest</em>':''}</span><b>${c.off?'Not suitable':money(c.med)}</b><small>${c.off||(c.card?`Parcel Post, ${c.apq.n>1?c.apq.n+' parcels of ':''}${Math.round(c.apq.per*10)/10} kg chargeable, ${c.apq.cat.replace('|',' ').replace('Same State Local','local')} on the ${LZN[c.apq.lz]} account, incl. ${Math.round(AP.fuel*1000)/10}% fuel and GST${c.apq.ex!=null?` · Express ${money(c.apq.ex)}`:''}`:`median of ${c.n} past shipments · ${money0(c.lo)}–${money0(c.hi)}`)}</small></button>`).join('')}</div>
+     <p class="note" style="margin:0">Australia Post is priced from your contract rate card. The others are based on ${sim.n} past ${SZ[sz]} orders ${lb2?'with an item over 1.05 m':'with everything under 1.05 m'}, ${esc(sim.label)}${sim.anyW?'':`, ${Math.round(sim.lo)}–${Math.round(sim.hi)} kg chargeable`}, each sent as one shipment. Prices include GST.</p>`
+     :`<div class="opts" role="radiogroup" aria-label="Carrier">${cars.map(c=>`<button type="button" class="opt" role="radio" data-ci="${c.ci}" aria-checked="${chosen&&c.ci===chosen.ci}"${c.off?' disabled':''}><span class="pick"><i class="dot"></i>${esc(c.name)}</span><b>${c.off?'Not suitable':money(c.med)}</b><small>${c.off||`Parcel Post, ${Math.round(c.apq.per*10)/10} kg chargeable, incl. fuel and GST`}</small></button>`).join('')}</div><p class="msg">Not enough past shipments like this to estimate other carriers.</p>`}
    ${msg}
    <dl class="kv"><dt>Items</dt><dd>${its.reduce((s,i)=>s+i.qty,0)}</dd><dt>Total cubic · weight</dt><dd>${cub.toFixed(3)} m³ · ${Math.round(kg*10)/10} kg</dd><dt>Chargeable weight</dt><dd>${Math.round(ck*10)/10} kg${cub*250>kg?' (by cubic)':''}</dd><dt>Longest item</dt><dd>${longest.toFixed(2)} m</dd><dt>Size on your website</dt><dd>${SZ[sz]} (${esc(wsc.i.name)}, by ${wsc.by})</dd></dl>
    ${marg}${missing?`<p class="msg w">${missing} item${missing>1?'s have':' has'} no dimensions in your product list, so the website sizes ${missing>1?'them':'it'} by weight only.</p>`:''}`;}
