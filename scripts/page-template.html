@@ -335,6 +335,7 @@ th:first-child,td:first-child{text-align:left}
             <label class="f">Ships from<select id="c-from"><option value="">Website's first-choice warehouse</option></select></label>
             <label class="f">Website service<select id="c-svc"><option value="standard">Standard</option><option value="priority">Priority</option></select></label>
           </div>
+          <label class="check"><input type="checkbox" id="c-guide" checked><span>Follow the freight guide <span style="color:var(--muted)">(carrier size limits, Aramex same-state only, state carriers in their own state, TNT only when nothing else fits)</span></span></label>
           <label class="check"><input type="checkbox" id="c-bulk" checked><span>New rates have a Bulky size <span style="color:var(--muted)">(any item of 0.4 m³ or more; untick for the 5 sizes you have now)</span></span></label>
           <div class="f combo">
             <label for="c-sku">Add products by SKU or name</label>
@@ -358,7 +359,7 @@ th:first-child,td:first-child{text-align:left}
           </details>
         </form>
         <div class="result" id="out" aria-live="polite"></div>
-        <p class="note">Today's website charges come from the October 2025 shipping sheet and new charges from the proposed rates sheets (RRG Website Shipping AU, proposed rates, October 2026, break-even settings; the version with a Bulky size while the Bulky switch is on, where any item of 0.4 m³ or more, i.e. cubic weight 100 kg+, makes the order Bulky) for the order's size (the website's 1–5 score: the highest of longest side, cubic weight at 250 kg/m³ and actual weight, taken from the order's biggest item) and include GST. Australia Post is priced from your contract rates (pricing schedule dated 18 May 2026, GST inclusive): the greater of dead weight or cubic weight (250 kg/m³) per parcel, up to 22 kg, on the cheapest of the Melbourne, Brisbane, Adelaide and Perth accounts the warehouse uses (Brendale, Campbellfield, Adelaide and Wangara each use their own; Moorebank, Moonah and Fyshwick use all four), plus an 11.5% fuel surcharge (October 2026, worked out from your shipments; it changes monthly). Checked against 3,597 past Australia Post shipments, it matches the carrier's estimate within 3% on 98.6% of them. The other carriers (StarTrack Road Express and Premium, TNT, Aramex, Northline, Cochranes, Followmont, PEP, Morrows and the Civic couriers) are priced from the OpenFreight rate cards and the zone lists exported on 23 October 2026, for the warehouse's own origin zone. Their fuel levies and surcharges aren't on the cards, so each card price is multiplied by that service's typical ratio of invoiced cost (or estimate where not yet billed) to card price for August–October 2026 shipments with nothing over 1.2 m, and a typical surcharge is added for orders with an item over 1.2 m, 1.8 m or 2.4 m, measured the same way. Hi-Trans, Civic NSW and Jet Couriers are left out because we haven't shipped with them, so there's nothing to calibrate against. The line under the carriers compares with past orders: the median we were actually charged (invoiced, or the estimate where not yet billed, plus GST) on past matched orders of the same website size, sent as one shipment from the same warehouse to the same state and Australia Post zone, with the longest item on the same side of 1.05 m and a similar chargeable weight (the greater of weight or cubic × 250). If there aren't at least six, it widens the weight range, then to any destination in that zone, then to any warehouse. Australia Post is ruled out for items over 1.05 m long, 22 kg or 0.25 m³ (its parcel limits). Product sizes, prices and costs come from your product export (20 October 2026).</p>
+        <p class="note">Today's website charges come from the October 2025 shipping sheet and new charges from the proposed rates sheets (RRG Website Shipping AU, proposed rates, October 2026, break-even settings; the version with a Bulky size while the Bulky switch is on, where any item of 0.4 m³ or more, i.e. cubic weight 100 kg+, makes the order Bulky) for the order's size (the website's 1–5 score: the highest of longest side, cubic weight at 250 kg/m³ and actual weight, taken from the order's biggest item) and include GST. Australia Post is priced from your contract rates (pricing schedule dated 18 May 2026, GST inclusive): the greater of dead weight or cubic weight (250 kg/m³) per parcel, up to 22 kg, on the cheapest of the Melbourne, Brisbane, Adelaide and Perth accounts the warehouse uses (Brendale, Campbellfield, Adelaide and Wangara each use their own; Moorebank, Moonah and Fyshwick use all four), plus an 11.5% fuel surcharge (October 2026, worked out from your shipments; it changes monthly). Checked against 3,597 past Australia Post shipments, it matches the carrier's estimate within 3% on 98.6% of them. The other carriers (StarTrack Road Express and Premium, TNT, Aramex, Northline, Cochranes, Followmont, PEP, Morrows and the Civic couriers) are priced from the OpenFreight rate cards and the zone lists exported on 23 October 2026, for the warehouse's own origin zone. Their fuel levies and surcharges aren't on the cards, so each card price is multiplied by that service's typical ratio of invoiced cost (or estimate where not yet billed) to card price for August–October 2026 shipments with nothing over 1.2 m, and a typical surcharge is added for orders with an item over 1.2 m, 1.8 m or 2.4 m, measured the same way. Hi-Trans, Civic NSW and Jet Couriers are left out because we haven't shipped with them, so there's nothing to calibrate against. The line under the carriers compares with past orders: the median we were actually charged (invoiced, or the estimate where not yet billed, plus GST) on past matched orders of the same website size, sent as one shipment from the same warehouse to the same state and Australia Post zone, with the longest item on the same side of 1.05 m and a similar chargeable weight (the greater of weight or cubic × 250). If there aren't at least six, it widens the weight range, then to any destination in that zone, then to any warehouse. Australia Post is ruled out for items over 1.05 m long, 22 kg or 0.25 m³. With "Follow the freight guide" ticked, every carrier also follows the RRG freight/dispatch guide: StarTrack Road Express up to 20 kg, 1.17 m × 0.6 m × 0.6 m per item; StarTrack Premium up to 22 kg, 1.05 m × 0.6 m × 0.6 m; Aramex up to 25 kg, 2.0 m and 1.05 m³, same-state only; TNT up to 70 kg and 2.4 × 1.2 × 1.5 m, and only when no other approved carrier can take the order; Morrows (VIC), Cochranes (SA) up to 30 kg and 3.0 m; Followmont (QLD) up to 6.0 m; PEP (WA) up to 25 kg, 1.2 × 0.6 × 0.6 m and 0.49 m³, each only within its own state. Northline and the Civic couriers aren't in the guide, so they're shown as needing approval. Product sizes, prices and costs come from your product export (20 October 2026).</p>
       </section>
       <section id="p-pc" role="tabpanel" aria-labelledby="t-pc" class="sect" hidden>
       <div class="stats">
@@ -726,17 +727,38 @@ function cardPrice(row,kg,m3,items){const [mn,cub,tiers]=row;const ch=Math.max(k
 function destZone(zf,sub,pc){const Zf=CR.z[zf];if(!Zf)return null;
   if(Zf.civic)return [sub.toUpperCase()+String(+pc)];
   const v=Zf.s[sub.toUpperCase()+'|'+pc]||Zf.p[pc];return v==null?null:(Array.isArray(v)?v:[v]);}
+/* RRG freight/dispatch guide: per-item limits and when each carrier may be used */
+const GUIDE={STNROAD:{kg:20,L:1.17,W:0.6,H:0.6,min:0.05},STNFPP:{kg:22,L:1.05,W:0.6,H:0.6,min:0.05},
+  ARAMX:{kg:25,L:2.0,m3:1.05,same:true},TNTROAD:{kg:70,L:2.4,W:1.2,H:1.5,last:true},
+  MORC:{kg:30,L:3.0,W:1.5,H:1.5,st:'VIC'},COCHRX:{kg:30,L:3.0,W:1.5,H:1.5,st:'SA'},FTROAD:{kg:14000,L:6.0,st:'QLD'},
+  PEPXP:{kg:25,L:1.2,W:0.6,H:0.6,m3:0.49,st:'WA'},NLROAD:{none:true},CVVCOU:{none:true},CVQCOU:{none:true},CVWCOU:{none:true}};
+['PEPEZ1','PEPEZ2','PEPEZ3','PEPEZ4','PEPEZ5'].forEach(k=>GUIDE[k]=GUIDE.PEPXP);
+const useGuide=()=>{const e=document.getElementById('c-guide');return !e||e.checked;};
+function guideCheck(k,whSt,p,its){const g=GUIDE[k];if(!g||!useGuide())return null;
+  if(g.none)return {note:'Not in the freight guide, so it needs special approval.'};
+  if(g.same&&p.st!==whSt)return {off:'Freight guide: same-state deliveries only.'};
+  if(g.st&&(whSt!==g.st||p.st!==g.st))return {off:`Freight guide: ${g.st} only.`};
+  for(const i of its){const d=[i.l,i.w,i.h].sort((a,b)=>b-a),m3=i.l*i.w*i.h,kg=i.kg||0;
+    const why=[g.kg&&kg>g.kg?`${kg} kg (max ${g.kg} kg)`:'',g.L&&d[0]>g.L+1e-9?`${d[0].toFixed(2)} m long (max ${g.L.toFixed(2)} m)`:'',g.W&&d[1]>g.W+1e-9?`${d[1].toFixed(2)} m wide (max ${g.W.toFixed(2)} m)`:'',g.H&&d[2]>g.H+1e-9?`${d[2].toFixed(2)} m high (max ${g.H.toFixed(2)} m)`:'',g.m3&&m3>g.m3?`${m3.toFixed(2)} m³ (max ${g.m3} m³)`:''].filter(Boolean);
+    if(why.length)return {off:`Freight guide: ${esc(i.name)} is ${why.join(', ')}.`};}
+  return null;}
 function carrierQuotes(p,sub,whSt,its,longest){
   const kg=its.reduce((s,i)=>s+i.qty*(i.kg||0),0),cub=its.reduce((s,i)=>s+i.qty*i.l*i.w*i.h,0),n=its.reduce((s,i)=>s+i.qty,0);
   const lc=longest>=2.4?3:longest>=1.8?2:longest>=1.2?1:0;const out=[];
   SVC.forEach((k,idx)=>{const sv=CR.sv[k];const org=sv.org[whSt];if(!org)return;
     const dz=destZone(sv.zf,sub,p.pc);if(!dz)return;const row=dz.map(z=>org[z]).find(Boolean);if(!row)return;
+    const gc=guideCheck(k,whSt,p,its);if(gc&&gc.off){out.push({ci:100+idx,name:sv.name,off:gc.off,svc:k});return;}
     const c=cardPrice(row,kg,cub,n);
-    if(c==null){out.push({ci:100+idx,name:sv.name,off:"Over this service's weight limit on the rate card."});return;}
+    if(c==null){out.push({ci:100+idx,name:sv.name,off:"Over this service's weight limit on the rate card.",svc:k});return;}
     const s=lc?sv.sur[lc-1]:0,ex=c*sv.ratio+s;
-    out.push({ci:100+idx,name:sv.name,med:ex*1.1,how:`card ${money(c)} ex GST × ${sv.ratio.toFixed(2)} (fuel and charges)${s?` + ${money(s)} for a ${longest.toFixed(2)} m item`:''}, plus GST · zone ${esc(dz.find(z=>org[z]))} · ${sv.used.toLocaleString()} shipments with us since June`});});
+    out.push({ci:100+idx,svc:k,name:sv.name,med:ex*1.1,note:gc&&gc.note,how:(gc&&gc.note?`<b>${gc.note}</b> `:'')+(useGuide()&&GUIDE[k]&&GUIDE[k].st&&p.zn>=2?'<b>Preferred for regional deliveries (freight guide).</b> ':'')+`card ${money(c)} ex GST × ${sv.ratio.toFixed(2)} (fuel and charges)${s?` + ${money(s)} for a ${longest.toFixed(2)} m item`:''}, plus GST · zone ${esc(dz.find(z=>org[z]))} · ${sv.used.toLocaleString()} shipments with us since June`});});
   const best={};out.forEach(o=>{const key=o.name.replace(/ zone \d/,'');if(o.off){if(!best[key])best[key]=o;return;}if(!best[key]||best[key].off||o.med<best[key].med)best[key]=o;});
-  return Object.values(best);}
+  const res=Object.values(best);
+  // freight guide: TNT only when nothing else approved can take it (Australia Post is checked by the caller)
+  if(useGuide()&&!lastResortOK(res,p,whSt,its))res.forEach(o=>{if(o.svc==='TNTROAD'&&!o.off){o.off='Freight guide: TNT is only for large items no other approved carrier can take.';delete o.med;}});
+  return res;}
+function lastResortOK(res,p,whSt,its){const other=res.some(o=>!o.off&&o.svc!=='TNTROAD'&&!o.note);if(other)return false;
+  const a=apQuote(p,whSt,its);return a.cost==null;}
 let carPick=null,carKey='';const WHCARS={};
 document.getElementById('out').addEventListener('click',e=>{const o=e.target.closest('.opt');if(!o||o.disabled)return;carPick=+o.dataset.ci;calc();});
 function calc(){if(view!=='calc')return;
@@ -795,7 +817,8 @@ function calc(){if(view!=='calc')return;
    <dl class="kv"><dt>Items</dt><dd>${its.reduce((s,i)=>s+i.qty,0)}</dd><dt>Total cubic · weight</dt><dd>${cub.toFixed(3)} m³ · ${Math.round(kg*10)/10} kg</dd><dt>Chargeable weight</dt><dd>${Math.round(ck*10)/10} kg${cub*250>kg?' (by cubic)':''}</dd><dt>Longest item</dt><dd>${longest.toFixed(2)} m</dd><dt>Size on your website</dt><dd>${SZ[sz]} (${esc(wsc.i.name)}, by ${wsc.by})</dd>${bulkIt?`<dt>Size with the Bulky rule</dt><dd>Bulky (${esc(bulkIt.name)}, ${(bulkIt.l*bulkIt.w*bulkIt.h).toFixed(2)} m³)${bulkOn?'':' · switch is off, so the new rates use '+SZ[sz]}</dd>`:''}</dl>
    ${marg}${missing?`<p class="msg w">${missing} item${missing>1?'s have':' has'} no dimensions in your product list, so the website sizes ${missing>1?'them':'it'} by weight only.</p>`:''}`;}
 let cT;document.getElementById('c-dest').addEventListener('input',()=>{clearTimeout(cT);cT=setTimeout(calc,250);});
-document.getElementById('c-from').addEventListener('change',calc);document.getElementById('c-bulk').addEventListener('change',()=>{try{localStorage.setItem('auBulk',document.getElementById('c-bulk').checked?'1':'0');}catch(e){}calc();});
+document.getElementById('c-from').addEventListener('change',calc);document.getElementById('c-guide').addEventListener('change',()=>{try{localStorage.setItem('auGuide',document.getElementById('c-guide').checked?'1':'0');}catch(e){}MO.forEach(o=>{delete o.cx;});calc();});
+try{if(localStorage.getItem('auGuide')==='0')document.getElementById('c-guide').checked=false;}catch(e){}document.getElementById('c-bulk').addEventListener('change',()=>{try{localStorage.setItem('auBulk',document.getElementById('c-bulk').checked?'1':'0');}catch(e){}calc();});
 try{if(localStorage.getItem('auBulk')==='0')document.getElementById('c-bulk').checked=false;}catch(e){}document.getElementById('c-svc').addEventListener('change',calc);
 document.getElementById('calc').addEventListener('submit',e=>{e.preventDefault();calc();});
 renderLines();
