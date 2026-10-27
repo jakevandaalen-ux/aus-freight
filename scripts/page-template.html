@@ -119,6 +119,8 @@ td.w,td.g{font-weight:600}
 .calcf{display:flex;flex-direction:column;gap:12px}
 label.f{display:flex;flex-direction:column;gap:4px;font-size:13.5px;color:var(--muted)}
 label.f input,label.f select,.combo input,.dims input{padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--land);color:var(--ink);font:inherit;font-size:15px;min-width:0}
+.row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
+.palbox{display:flex;flex-direction:column}
 .row2{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:8px}
 label.f select{width:100%}
 .dims{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
@@ -317,7 +319,7 @@ th:first-child,td:first-child{text-align:left}
           <div style="overflow-x:auto"><table id="r-tab"><thead><tr><th>Delivering to</th><th>From</th><th>Metro</th><th>Outer metro</th><th>Regional</th></tr></thead><tbody></tbody></table></div>
         </div>
         <div style="display:flex;flex-direction:column;gap:8px">
-          <h2 id="c-h">What it actually costs us</h2>
+          <h2 id="cost-h">What it actually costs us</h2>
           <div style="overflow-x:auto"><table id="c-tab"><thead><tr><th>Shipped</th><th>Metro</th><th>Outer metro</th><th>Regional</th></tr></thead><tbody></tbody></table></div>
           <p class="note" style="margin:0">Median carrier cost incl. GST for matched orders of this size that went as one invoice in one shipment, with the cheapest carrier we've used on at least three of them. Same state means the warehouse is in the customer's state.</p>
         </div>
@@ -334,6 +336,14 @@ th:first-child,td:first-child{text-align:left}
           <div class="row2">
             <label class="f">Ships from<select id="c-from"><option value="">Website's first-choice warehouse</option></select></label>
             <label class="f">Website service<select id="c-svc"><option value="standard">Standard</option><option value="priority">Priority</option></select></label>
+          </div>
+          <div class="palbox">
+            <label class="check"><input type="checkbox" id="c-pal"><span>Ship on pallets <span style="color:var(--muted)">(standard 1.165 × 1.165 m pallet)</span></span></label>
+            <div class="row3" id="c-palf" hidden>
+              <label class="f">Pallets<input type="number" id="c-pn" min="1" step="1" value="1"></label>
+              <label class="f">Loaded height m<input type="number" id="c-ph" min="0.1" step="0.05" value="1.2"></label>
+              <label class="f">Pallet weight kg<input type="number" id="c-pw" min="0" step="1" value="25"></label>
+            </div>
           </div>
           <label class="check"><input type="checkbox" id="c-guide" checked><span>Follow the freight guide <span style="color:var(--muted)">(carrier size limits, Aramex same-state only, state carriers in their own state, TNT only when nothing else fits)</span></span></label>
           <label class="check"><input type="checkbox" id="c-bulk" checked><span>New rates have a Bulky size <span style="color:var(--muted)">(any item of 0.4 m³ or more; untick for the 5 sizes you have now)</span></span></label>
@@ -608,7 +618,7 @@ function renderRates(){
     return `<tr><td>${dst}</td><td style="text-align:left">${wi>=0?esc(WH[wi].name):fr}</td>${[0,1,2].map(z=>{const v=priceOf(dst,fr,rSvc,rSize,z),e=etaOf(dst,fr,rSvc,rSize,z);
       const c=costOf(fr===dst,rSize+1,z);
       return v==null?`<td class="na">${WR.R[dst][fr]?'blank':'no table'}</td>`:`<td>${money(v)}${e?`<small>${esc(e)}</small>`:''}${c?`<small class="${c.med>v?'w':'g'}">costs ~${money0(c.med)}</small>`:''}</td>`;}).join('')}</tr>`;}).join('');
-  document.getElementById('c-h').textContent=`What it actually costs us · ${SZ[rSize]}`;
+  document.getElementById('cost-h').textContent=`What it actually costs us · ${SZ[rSize]}`;
   document.querySelector('#c-tab tbody').innerHTML=[['L','Same state'],['I','Interstate']].map(([k,l])=>`<tr><td>${l}</td>${[0,1,2].map(z=>{const c=COST[k][rSize+1]&&COST[k][rSize+1][z];
     if(!c)return '<td class="na">no orders</td>';const cb=c.cars[0];
     return `<td>${money(c.med)}<small>${c.n} orders · charged avg ${money(c.ch)}</small>${cb?`<small>cheapest: ${esc(tcase(cb[0]))} ${money0(cb[1])}</small>`:''}</td>`;}).join('')}</tr>`).join('');
@@ -733,8 +743,11 @@ const GUIDE={STNROAD:{kg:20,L:1.17,W:0.6,H:0.6,min:0.05},STNFPP:{kg:22,L:1.05,W:
   MORC:{kg:30,L:3.0,W:1.5,H:1.5,st:'VIC'},COCHRX:{kg:30,L:3.0,W:1.5,H:1.5,st:'SA'},FTROAD:{kg:14000,L:6.0,st:'QLD'},
   PEPXP:{kg:25,L:1.2,W:0.6,H:0.6,m3:0.49,st:'WA'},NLROAD:{none:true},CVVCOU:{none:true},CVQCOU:{none:true},CVWCOU:{none:true}};
 ['PEPEZ1','PEPEZ2','PEPEZ3','PEPEZ4','PEPEZ5'].forEach(k=>GUIDE[k]=GUIDE.PEPXP);
+// pallets: which services take them, and the guide's pallet limits
+const PALLET_SVC=new Set(['STNROAD','TNTROAD','FTROAD','NLROAD','MORP','COCHP']),PALLET_ONLY=new Set(['MORP','COCHP']);
+const GUIDEP={STNROAD:{},TNTROAD:{kg:1000,L:2.4,W:1.2,H:1.5,last:true},MORP:{kg:14000,L:6,st:'VIC'},COCHP:{kg:14000,st:'SA'},FTROAD:{kg:14000,L:6,st:'QLD'},NLROAD:{none:true}};
 const useGuide=()=>{const e=document.getElementById('c-guide');return !e||e.checked;};
-function guideCheck(k,whSt,p,its){const g=GUIDE[k];if(!g||!useGuide())return null;
+function guideCheck(k,whSt,p,its,pal){const g=(pal?GUIDEP:GUIDE)[k];if(!g||!useGuide())return null;
   if(g.none)return {note:'Not in the freight guide, so it needs special approval.'};
   if(g.same&&p.st!==whSt)return {off:'Freight guide: same-state deliveries only.'};
   if(g.st&&(whSt!==g.st||p.st!==g.st))return {off:`Freight guide: ${g.st} only.`};
@@ -742,12 +755,12 @@ function guideCheck(k,whSt,p,its){const g=GUIDE[k];if(!g||!useGuide())return nul
     const why=[g.kg&&kg>g.kg?`${kg} kg (max ${g.kg} kg)`:'',g.L&&d[0]>g.L+1e-9?`${d[0].toFixed(2)} m long (max ${g.L.toFixed(2)} m)`:'',g.W&&d[1]>g.W+1e-9?`${d[1].toFixed(2)} m wide (max ${g.W.toFixed(2)} m)`:'',g.H&&d[2]>g.H+1e-9?`${d[2].toFixed(2)} m high (max ${g.H.toFixed(2)} m)`:'',g.m3&&m3>g.m3?`${m3.toFixed(2)} m³ (max ${g.m3} m³)`:''].filter(Boolean);
     if(why.length)return {off:`Freight guide: ${esc(i.name)} is ${why.join(', ')}.`};}
   return null;}
-function carrierQuotes(p,sub,whSt,its,longest){
+function carrierQuotes(p,sub,whSt,its,longest,pal){
   const kg=its.reduce((s,i)=>s+i.qty*(i.kg||0),0),cub=its.reduce((s,i)=>s+i.qty*i.l*i.w*i.h,0),n=its.reduce((s,i)=>s+i.qty,0);
-  const lc=longest>=2.4?3:longest>=1.8?2:longest>=1.2?1:0;const out=[];
-  SVC.forEach((k,idx)=>{const sv=CR.sv[k];const org=sv.org[whSt];if(!org)return;
+  const lc=pal?0:longest>=2.4?3:longest>=1.8?2:longest>=1.2?1:0;const out=[];
+  SVC.forEach((k,idx)=>{const sv=CR.sv[k];if(pal?!PALLET_SVC.has(k):PALLET_ONLY.has(k))return;const org=sv.org[whSt];if(!org)return;
     const dz=destZone(sv.zf,sub,p.pc);if(!dz)return;const row=dz.map(z=>org[z]).find(Boolean);if(!row)return;
-    const gc=guideCheck(k,whSt,p,its);if(gc&&gc.off){out.push({ci:100+idx,name:sv.name,off:gc.off,svc:k});return;}
+    const gc=guideCheck(k,whSt,p,its,pal);if(gc&&gc.off){out.push({ci:100+idx,name:sv.name,off:gc.off,svc:k});return;}
     const c=cardPrice(row,kg,cub,n);
     if(c==null){out.push({ci:100+idx,name:sv.name,off:"Over this service's weight limit on the rate card.",svc:k});return;}
     const s=lc?sv.sur[lc-1]:0,ex=c*sv.ratio+s;
@@ -755,10 +768,10 @@ function carrierQuotes(p,sub,whSt,its,longest){
   const best={};out.forEach(o=>{const key=o.name.replace(/ zone \d/,'');if(o.off){if(!best[key])best[key]=o;return;}if(!best[key]||best[key].off||o.med<best[key].med)best[key]=o;});
   const res=Object.values(best);
   // freight guide: TNT only when nothing else approved can take it (Australia Post is checked by the caller)
-  if(useGuide()&&!lastResortOK(res,p,whSt,its))res.forEach(o=>{if(o.svc==='TNTROAD'&&!o.off){o.off='Freight guide: TNT is only for large items no other approved carrier can take.';delete o.med;}});
+  if(useGuide()&&!lastResortOK(res,p,whSt,its,pal))res.forEach(o=>{if(o.svc==='TNTROAD'&&!o.off){o.off='Freight guide: TNT is only for large items no other approved carrier can take.';delete o.med;}});
   return res;}
-function lastResortOK(res,p,whSt,its){const other=res.some(o=>!o.off&&o.svc!=='TNTROAD'&&!o.note);if(other)return false;
-  const a=apQuote(p,whSt,its);return a.cost==null;}
+function lastResortOK(res,p,whSt,its,pal){const other=res.some(o=>!o.off&&o.svc!=='TNTROAD'&&!o.note);if(other)return false;
+  if(pal)return true;const a=apQuote(p,whSt,its);return a.cost==null;}
 let carPick=null,carKey='';const WHCARS={};
 document.getElementById('out').addEventListener('click',e=>{const o=e.target.closest('.opt');if(!o||o.disabled)return;carPick=+o.dataset.ci;calc();});
 function calc(){if(view!=='calc')return;
@@ -786,13 +799,16 @@ function calc(){if(view!=='calc')return;
   const nr=NR[dst]&&NR[dst][frSt],nstd=nr?nr.standard[nsz][z]:null,npri=nr?nr.priority[nsz][z]:null,ncharge=svc==='priority'?npri:nstd;
   const lb2=longest>1.05;const big=its.find(i=>Math.max(i.l,i.w,i.h)>1.05||(i.kg||0)>22||i.l*i.w*i.h>0.25);
   const sim=similar(p,wi,ck,sz,longest);
-  const cars=carrierQuotes(p,d.name,w.st,its,longest);
-  const apq=apQuote(p,w.st,its);
+  const pal=document.getElementById('c-pal').checked;
+  const np=Math.max(1,parseInt(document.getElementById('c-pn').value,10)||1),ph=Math.max(0.1,parseFloat(document.getElementById('c-ph').value)||1.2),pw=Math.max(0,parseFloat(document.getElementById('c-pw').value)||0);
+  const pits=Array.from({length:np},(_,k)=>({name:np>1?`Pallet ${k+1}`:'The pallet',l:1.165,w:1.165,h:ph,kg:Math.round((kg/np+pw)*10)/10,qty:1}));
+  const cars=pal?carrierQuotes(p,d.name,w.st,pits,1.165,true):carrierQuotes(p,d.name,w.st,its,longest);
+  const apq=pal?{why:"Australia Post doesn't take pallets."}:apQuote(p,w.st,its);
   if(apq.cost!=null)cars.push({ci:-2,name:'Australia Post · rate card',med:apq.cost,card:true,apq,how:`Parcel Post, ${apq.n>1?apq.n+' parcels of ':''}${Math.round(apq.per*10)/10} kg chargeable, ${apq.cat.replace('|',' ').replace('Same State Local','local')} on the ${LZN[apq.lz]} account, incl. ${Math.round(AP.fuel*1000)/10}% fuel and GST${apq.ex!=null?` · Express ${money(apq.ex)}`:''}`});
   else cars.push({ci:-2,name:'Australia Post · rate card',off:esc(apq.why),card:true});
   cars.sort((a,b)=>(a.off?1:0)-(b.off?1:0)||(a.med??1e9)-(b.med??1e9));
   const avail=cars.filter(c=>!c.off);
-  const key=[p.pc,wi,sz,lb2,Math.round(ck)].join('|');if(key!==carKey){carKey=key;carPick=null;}
+  const key=[p.pc,wi,sz,lb2,Math.round(ck),pal,np].join('|');if(key!==carKey){carKey=key;carPick=null;}
   if(carPick==null||!avail.some(c=>c.ci===carPick))carPick=avail.length?avail[0].ci:null;
   const chosen=avail.find(c=>c.ci===carPick);
   const value=its.reduce((s,i)=>s+i.qty*i.price,0),pcost=its.reduce((s,i)=>s+i.qty*i.buy,0),missing=its.filter(i=>!(i.l&&i.w&&i.h)).length;
@@ -810,14 +826,15 @@ function calc(){if(view!=='calc')return;
      <tr class="new"><td>New · ${nsz===5?'Bulky':SZ[sz]} <small>proposed rates${bulkOn?' with Bulky':''}</small></td><td class="${svc==='standard'?'on':''}">${nstd==null?'–':money(nstd)}</td><td class="${svc==='priority'?'on':''}">${npri==null?'–':money(npri)}</td></tr>
      <tr><td>Change</td>${[[std,nstd],[pri,npri]].map(([a,b],k)=>`<td class="${(k?svc==='priority':svc==='standard')?'on':''} ${a!=null&&b!=null?(b>a?'up':'dn'):''}">${a!=null&&b!=null?(b>=a?'+':'−')+money(Math.abs(b-a)):'–'}</td>`).join('')}</tr>
    </tbody></table></div>
-   <h2 style="font-size:16px;margin:0">What it costs us to send</h2>
+   <h2 style="font-size:16px;margin:0">What it costs us to send${pal?` · ${np} pallet${np>1?'s':''}`:''}</h2>
+   ${pal?`<p class="note" style="margin:0">Priced as ${np} standard pallet${np>1?'s':''} (1.165 × 1.165 × ${ph.toFixed(2)} m, ${pits[0].kg} kg each including ${pw} kg for the pallet${np>1?', the order\'s weight split evenly':''}). Only carriers that take pallets are shown: StarTrack Road Express, TNT, Northline, and in their own states Morrows, Cochranes and Followmont. Tailgate, hand-unload and pallet hire charges aren't included.${longest>1.165?` <b>The longest item is ${longest.toFixed(2)} m, longer than the pallet.</b>`:''}</p>`:''}
    <div class="opts" role="radiogroup" aria-label="Carrier">${cars.map(c=>`<button type="button" class="opt" role="radio" data-ci="${c.ci}" aria-checked="${chosen&&c.ci===chosen.ci}"${c.off?' disabled':''}><span class="pick"><i class="dot"></i>${esc(c.name)}${avail[0]&&c.ci===avail[0].ci?'<em class="tag">Cheapest</em>':''}</span><b>${c.off?'Not available':money(c.med)}</b><small>${c.off||c.how}</small></button>`).join('')}</div>
      <p class="note" style="margin:0">Australia Post is priced exactly from your contract rates. The other carriers are priced from their rate cards and zone lists, then adjusted to what they actually invoiced us in August–October 2026 (fuel and typical surcharges, including StarTrack's and TNT's charges for items over 1.2 m and 1.8 m). Prices include GST.${sim&&sim.n?` Past ${SZ[sz]} orders like this cost a median of ${money(med(sim.cars.flatMap(c=>Array(c.n).fill(c.med))))} (${sim.n} orders ${esc(sim.label)}).`:''}</p>
    ${msg}
    <dl class="kv"><dt>Items</dt><dd>${its.reduce((s,i)=>s+i.qty,0)}</dd><dt>Total cubic · weight</dt><dd>${cub.toFixed(3)} m³ · ${Math.round(kg*10)/10} kg</dd><dt>Chargeable weight</dt><dd>${Math.round(ck*10)/10} kg${cub*250>kg?' (by cubic)':''}</dd><dt>Longest item</dt><dd>${longest.toFixed(2)} m</dd><dt>Size on your website</dt><dd>${SZ[sz]} (${esc(wsc.i.name)}, by ${wsc.by})</dd>${bulkIt?`<dt>Size with the Bulky rule</dt><dd>Bulky (${esc(bulkIt.name)}, ${(bulkIt.l*bulkIt.w*bulkIt.h).toFixed(2)} m³)${bulkOn?'':' · switch is off, so the new rates use '+SZ[sz]}</dd>`:''}</dl>
    ${marg}${missing?`<p class="msg w">${missing} item${missing>1?'s have':' has'} no dimensions in your product list, so the website sizes ${missing>1?'them':'it'} by weight only.</p>`:''}`;}
 let cT;document.getElementById('c-dest').addEventListener('input',()=>{clearTimeout(cT);cT=setTimeout(calc,250);});
-document.getElementById('c-from').addEventListener('change',calc);document.getElementById('c-guide').addEventListener('change',()=>{try{localStorage.setItem('auGuide',document.getElementById('c-guide').checked?'1':'0');}catch(e){}MO.forEach(o=>{delete o.cx;});calc();});
+document.getElementById('c-from').addEventListener('change',calc);document.getElementById('c-pal').addEventListener('change',()=>{document.getElementById('c-palf').hidden=!document.getElementById('c-pal').checked;calc();});['c-pn','c-ph','c-pw'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{clearTimeout(cT);cT=setTimeout(calc,200);}));document.getElementById('c-guide').addEventListener('change',()=>{try{localStorage.setItem('auGuide',document.getElementById('c-guide').checked?'1':'0');}catch(e){}MO.forEach(o=>{delete o.cx;});calc();});
 try{if(localStorage.getItem('auGuide')==='0')document.getElementById('c-guide').checked=false;}catch(e){}document.getElementById('c-bulk').addEventListener('change',()=>{try{localStorage.setItem('auBulk',document.getElementById('c-bulk').checked?'1':'0');}catch(e){}calc();});
 try{if(localStorage.getItem('auBulk')==='0')document.getElementById('c-bulk').checked=false;}catch(e){}document.getElementById('c-svc').addEventListener('change',calc);
 document.getElementById('calc').addEventListener('submit',e=>{e.preventDefault();calc();});

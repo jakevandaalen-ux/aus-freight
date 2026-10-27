@@ -3,7 +3,7 @@ sys.path.insert(0,'/home/claude/au/eng2')
 from val import S,f,zfile,zrec,lookup,price,CARDS,Z
 LG=json.load(open('/home/claude/au/eng2/sn_longest.json'))
 WHS={'SA':('ADELAIDE','5000'),'VIC':('CAMPBELLFIELD','3061'),'QLD':('BRENDALE','4500'),'WA':('WANGARA','6065'),'ACT':('FYSHWICK','2609'),'TAS':('MOONAH','7009'),'NSW':('MOOREBANK','2170')}
-NAMES={'STNROAD':'StarTrack Road Express','STNFPP':'StarTrack Premium (next day)','TNTROAD':'TNT Road Express','ARAMX':'Aramex','NLROAD':'Northline','COCHRX':'Cochranes','FTROAD':'Followmont','PEPXP':'PEP metro','PEPEZ1':'PEP country zone 1','PEPEZ2':'PEP country zone 2','PEPEZ3':'PEP country zone 3','PEPEZ4':'PEP country zone 4','PEPEZ5':'PEP country zone 5','MORC':'Morrows','CVVCOU':'Civic courier (VIC)','CVQCOU':'Civic courier (QLD)','CVWCOU':'Civic courier (WA)','CVNCOU':'Civic courier (NSW)','JCADCG':'Jet Couriers (Adelaide)','HITRAG':'Hi-Trans'}
+NAMES={'STNROAD':'StarTrack Road Express','STNFPP':'StarTrack Premium (next day)','TNTROAD':'TNT Road Express','ARAMX':'Aramex','NLROAD':'Northline','COCHRX':'Cochranes','FTROAD':'Followmont','PEPXP':'PEP metro','PEPEZ1':'PEP country zone 1','PEPEZ2':'PEP country zone 2','PEPEZ3':'PEP country zone 3','PEPEZ4':'PEP country zone 4','PEPEZ5':'PEP country zone 5','MORC':'Morrows','CVVCOU':'Civic courier (VIC)','CVQCOU':'Civic courier (QLD)','CVWCOU':'Civic courier (WA)','CVNCOU':'Civic courier (NSW)','JCADCG':'Jet Couriers (Adelaide)','HITRAG':'Hi-Trans','MORP':'Morrows pallet','COCHP':'Cochranes pallet'}
 used=collections.Counter(s['Service Code'] for s in S)
 out={};files=set()
 for svc,name in NAMES.items():
@@ -34,6 +34,8 @@ for svc,name in NAMES.items():
         ys[k].append((p,c))
     base=ys[0] if len(ys[0])>=5 else [x for k in ys for x in ys[k]]
     ratio=st.median([c/p for p,c in base]) if len(base)>=5 else None
+    FB={'MORP':'MORC','COCHP':'COCHRX'}
+    if not ratio and svc in FB and FB[svc] in out: ratio=out[FB[svc]]['ratio'];sur=[0,0,0];print('fallback ratio',svc,ratio)
     if not ratio: print('skip',svc);continue
     sur=[0,0,0]
     if ratio:
