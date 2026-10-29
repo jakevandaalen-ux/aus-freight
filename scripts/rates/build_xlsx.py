@@ -242,12 +242,20 @@ fs['A11']='The 2025 sheet\'s version of this tab listed Large 1.8–2.5 m, XL 2.
 for j,w in enumerate([8,10,22,28,20],1): fs.column_dimensions[CL(j)].width=w
 # ---------- Source hierarchy
 sh=wb.create_sheet('Source Hierarchy')
-sh['A1']='Which warehouse the website ships from first (unchanged from the 2025 sheet; NT from the awaiting-approval version)';sh['A1'].font=BOLD
-for j,h in enumerate(['Delivering to','1st','2nd','3rd','4th','5th'],1): c=sh.cell(3,j,h);c.font=BOLD;c.fill=HDR
+sh['A1']='Which warehouse the website ships from, in order of preference: all 7 warehouses for every state';sh['A1'].font=BOLD
+CODE={'QLD':'au_qld_dc_brendale','NSW':'au_nsw_dc_online','VIC':'au_vic_dc_online','SA':'au_sa_st_adelaide_city','WA':'au_wa_dc_online','TAS':'au_tas_dc_online','ACT':'au_act_dc_online'}
+for j,h in enumerate(['Delivering to','1st','2nd','3rd','4th','5th','6th','7th'],1): c=sh.cell(3,j,h);c.font=BOLD;c.fill=HDR
+NEW5={'NT':'QLD','QLD':'WA','WA':'QLD'};NEWFILL=PatternFill('solid',fgColor='FFF2CC')
 for i,d in enumerate(STS):
     sh.cell(4+i,1,d).font=NORM
-    for k,f in enumerate(W['pref'][d]): sh.cell(4+i,2+k,f'{f} · {WHST[f][1]}').font=NORM
-for j in range(1,7): sh.column_dimensions[CL(j)].width=18
+    for k,f in enumerate(W['pref'][d]):
+        c=sh.cell(4+i,2+k,f'{f} · {WHST[f][1]}');c.font=NORM
+        sh.cell(14+i,2+k,CODE[f]).font=GREY
+        if k>=5 or (k==4 and NEW5.get(d)==f): c.fill=NEWFILL
+    sh.cell(14+i,1,d).font=GREY
+sh.cell(13,1,'Website source codes').font=BOLD
+sh.cell(23,1,'1st to 4th (and 5th where it was set) are from the 2025 sheet. Shaded cells are new: the missing 5th choices set as NT → QLD, QLD → WA and WA → QLD, and the 6th and 7th choices, which are the two remaining warehouses ranked by expected freight cost to that state on the proposed rates (weighted by the mix of sizes and zones we send there).').font=GREY
+for j in range(1,9): sh.column_dimensions[CL(j)].width=22
 # ---------- Postcode zones
 pz=wb.create_sheet('Postcode zones')
 web=json.load(open('/home/claude/au/rates/web_rates.json'))['webname']
