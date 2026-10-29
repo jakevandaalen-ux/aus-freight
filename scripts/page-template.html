@@ -251,10 +251,10 @@ th:first-child,td:first-child{text-align:left}
       <div class="card" id="pick" hidden></div>
       <section id="p-del" role="tabpanel" aria-labelledby="t-del" class="sect">
         <div class="stats">
-          <div><b id="d-con">–</b><span>consignments</span></div>
+          <div><b id="d-con">–</b><span>orders</span></div>
           <div><b id="d-pc">–</b><span>postcodes</span></div>
           <div><b id="d-cost">–</b><span>freight cost incl. GST</span></div>
-          <div><b id="d-avg">–</b><span>average per consignment</span></div>
+          <div><b id="d-avg">–</b><span>average freight cost per order</span></div>
         </div>
         <div class="ofilt">
           <select id="f-wh" aria-label="Warehouse"><option value="">All warehouses</option></select>
@@ -276,7 +276,7 @@ th:first-child,td:first-child{text-align:left}
           <h2>Busiest postcodes</h2>
           <ol class="top" id="top"></ol>
         </div>
-        <p class="note">From the carrier export: <span id="d-range"></span>. Cost is the invoiced cost where billed, otherwise the carrier's estimate, plus 10% GST. Bigger dots mean more consignments; colour is the Australia Post zone. Customer names are not included.</p>
+        <p class="note">From the carrier export: <span id="d-range"></span>. Cost is the invoiced cost where billed, otherwise the carrier's estimate, plus 10% GST. Bigger dots mean more orders; colour is the Australia Post zone. Customer names are not included.</p>
       </section>
       <section id="p-ord" role="tabpanel" aria-labelledby="t-ord" class="sect" hidden>
         <p class="sub" style="margin:0">Orders matched across the sales, freight and carrier reports: what the customer paid for shipping against what the carrier charged us. All amounts include GST.</p>
@@ -304,7 +304,7 @@ th:first-child,td:first-child{text-align:left}
         </div>
         <div class="otable"><table id="otab"><thead><tr><th data-k="date" class="l">Date</th><th data-k="pc" class="l">Delivered to</th><th data-k="wh" class="l">From</th><th data-k="web" title="What the website's rate card charges for this order">Website</th><th data-k="ch" title="Freight we charged the customer">Charged</th><th data-k="co" title="What the carrier charged us">Cost</th><th data-k="d" title="Charged minus cost">Gap</th><th data-k="cx" class="l" title="What the cheapest carrier on your rate cards would cost for this order, incl. GST">Cheapest now</th></tr></thead><tbody></tbody></table></div>
         <button type="button" class="linkbtn" id="o-more" hidden>Show more</button>
-        <p class="note">Website is what the website's rate card charges for the order's size; Charged is the freight on the invoices; Cost is what the carriers charged us; Gap is Charged minus Cost. Matched by customer name across the three reports ("3 of 3" in column F): <span id="o-cnt"></span>. A customer with several orders in the period counts as one row, with their charges and shipments added together. "Cost us" uses the invoiced cost where the carrier has billed it and the carrier's estimate where it hasn't yet (the match file's own summary counts unbilled shipments as $0), plus 10% GST. "We charged" is the freight charged on the invoices. "Cheapest now" prices the order as one consignment from the warehouse it shipped from with every carrier on your rate cards (Australia Post exactly; the others calibrated to what they invoiced us), using the shipment's weight and cubic and the order's longest product; it's an estimate, so treat single orders as a guide and the totals as the signal. Click an order to find it on the map. Customer names, emails and phone numbers are not included.</p>
+        <p class="note">Website is what the website's rate card charges for the order's size; Charged is the freight on the invoices; Cost is what the carriers charged us; Gap is Charged minus Cost. Orders matched in all three reports (sales, freight and carrier; Orders_Matched_All_3, 29 October 2026): <span id="o-cnt"></span>, one row per invoice, despatched July 2025 to August 2026. 160 orders with an overseas or unknown postcode are left out. "Cost us" is the carrier's estimated cost from that file plus 10% GST. "We charged" is the freight charged on the invoice. Size comes from the products on the order (SKUs matched to your product export); "Cheapest now" prices the order as one consignment from the warehouse it shipped from with every carrier on your rate cards (Australia Post exactly; the others calibrated to what they invoiced us), using the order's weight, the products' cubic and its longest product; it's an estimate, so treat single orders as a guide and the totals as the signal. Click an order to find it on the map. Customer names, emails and phone numbers are not included.</p>
       </section>
       <section id="p-rate" role="tabpanel" aria-labelledby="t-rate" class="sect" hidden>
         <p class="sub" style="margin:0">What the website charges customers for freight, from the October 2025 shipping sheet. Pick a product size and service; the map colours every postcode by the price a customer sees.</p>
@@ -437,7 +437,7 @@ const PCtmp=0;const ig=el('g',{class:'inset'});sg.after(ig);
 PC.forEach(p=>{const ins=INSET[p.pc];p.xy=ins?proj(ins[0],ins[1]):proj(p.lon,p.lat);
   if(ins){const gg=el('g',{});gg.append(el('rect',{x:-20,y:-20,width:40,height:40,rx:6}));const tx=el('text',{x:26,y:4});tx.textContent=ins[2];gg.append(tx);ig.append(gg);p.inset=ins[2];p.ig=gg;}
   const c=el('circle',{cx:p.xy[0],cy:p.xy[1],class:'pc'+(p.kind!=='D'?' po':'')});p.el=c;dg.append(c);
-  c.addEventListener('pointerenter',e=>showTip(`<b>${p.pc}</b> · ${p.st}${p.kind!=='D'?' · PO boxes / business only':''}${p.inset?' · shown out of position':''}<br>${esc(p.names)}${p.n>4?` <span class="m">+${p.n-4} more</span>`:''}<br><span class="m">${ZN[p.zn][0]}${p.area&&p.zn<3?` (${esc(p.area)})`:''} · ${raName(p.ra)}<br>${Math.round(p.nw.d).toLocaleString()} km from ${esc(p.nw.w.name)}</span>${view==='del'&&p.dn?`<br><b>${p.dn} consignment${p.dn>1?'s':''}</b> · avg ${money(p.dc/p.dn)}`:''}${view==='ord'&&p.on?`<br><b>${p.on} matched order${p.on>1?'s':''}</b> · charged ${money(p.och)} vs cost ${money(p.oco)}`:''}`,e));
+  c.addEventListener('pointerenter',e=>showTip(`<b>${p.pc}</b> · ${p.st}${p.kind!=='D'?' · PO boxes / business only':''}${p.inset?' · shown out of position':''}<br>${esc(p.names)}${p.n>4?` <span class="m">+${p.n-4} more</span>`:''}<br><span class="m">${ZN[p.zn][0]}${p.area&&p.zn<3?` (${esc(p.area)})`:''} · ${raName(p.ra)}<br>${Math.round(p.nw.d).toLocaleString()} km from ${esc(p.nw.w.name)}</span>${view==='del'&&p.dn?`<br><b>${p.dn} order${p.dn>1?'s':''}</b> · avg ${money(p.dc/p.dn)}`:''}${view==='ord'&&p.on?`<br><b>${p.on} matched order${p.on>1?'s':''}</b> · charged ${money(p.och)} vs cost ${money(p.oco)}`:''}`,e));
   c.addEventListener('pointermove',moveTip);c.addEventListener('pointerleave',()=>tip.hidden=true);
   c.addEventListener('click',()=>pick(p));});
 const STAR='M0,-9L2.6,-3.3L8.6,-2.8L4,1.2L5.3,7.3L0,4.2L-5.3,7.3L-4,1.2L-8.6,-2.8L-2.6,-3.3Z';
@@ -502,7 +502,7 @@ const money0=v=>'$'+Math.round(v).toLocaleString('en-AU');
 const tcase=s=>s.replace(/\b\w+/g,w=>w.length<=3&&w===w.toUpperCase()&&/^(TNT|PEP|WA|VIC|QLD)$/.test(w)?w:w[0]+w.slice(1).toLowerCase());
 const ORD=OD.O.map(([pi,wi,ci,cost,kg,vol,date,res,svc,ref])=>({p:PC[pi],wi,ci,cost:cost*1.1,kg,vol,date,res,svc,ref}));
 {const dates=ORD.map(o=>o.date).filter(Boolean).sort();const f=d=>new Date(d+'T00:00:00').toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'});
- document.getElementById('d-range').textContent=`${ORD.length.toLocaleString()} consignments despatched ${f(dates[0])} – ${f(dates.at(-1))}`;
+ document.getElementById('d-range').textContent=`${ORD.length.toLocaleString()} orders despatched ${f(dates[0])} – ${f(dates.at(-1))}`;
  const fw=document.getElementById('f-wh');WH.forEach((w,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`${w.st} · ${w.name}`;fw.append(o);});
  const o2=document.createElement('option');o2.value='-1';o2.textContent='Other senders';fw.append(o2);
  const fc=document.getElementById('f-car');CARS.forEach((c,i)=>{if(!ORD.some(o=>o.ci===i))return;const o=document.createElement('option');o.value=i;o.textContent=tcase(c);fc.append(o);});
@@ -535,13 +535,18 @@ try{const v=localStorage.getItem('auView');if(['pc','ord','rate','calc'].include
 const MO=MD.map(([pi,wi,ci,ch,co,tot,cogs,date,ninv,nsh,skus,kg,vol,cub,type,inv,sz,ws,wp,svc,fl,lg,bk])=>({p:PC[pi],bk:!!bk,wi,ci,ch,co:co*1.1,tot,cogs,date,ninv,nsh,skus,kg,vol,cub,type,inv,sz,ws,wp,svc,fl,lg,web:!sz?null:svc==='p'?wp:ws}));
 {const w=document.getElementById('o-wh');WH.forEach((x,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`${x.st} · ${x.name}`;w.append(o);});
  const c=document.getElementById('o-car');CARS.forEach((x,i)=>{if(!MO.some(o=>o.ci===i))return;const o=document.createElement('option');o.value=i;o.textContent=tcase(x);c.append(o);});
- document.getElementById('o-cnt').textContent=`${MO.length.toLocaleString()} customers, ${MO.reduce((s,o)=>s+o.ninv,0).toLocaleString()} invoices and ${MO.reduce((s,o)=>s+o.nsh,0).toLocaleString()} shipments`;}
+ document.getElementById('o-cnt').textContent=`${MO.length.toLocaleString()} orders and ${MO.reduce((s,o)=>s+o.nsh,0).toLocaleString()} consignments`;}
 let oSort={k:'date',dir:-1},oLimit=200;
+// price "Cheapest now" in the background so the tab opens straight away
+let cxBusy=false,SUBOF=null;
+function fillCheapest(list){if(cxBusy)return;cxBusy=true;let i=0;
+  const step=()=>{const end=Math.min(list.length,i+400);for(;i<end;i++)cheapest(list[i]);
+    if(i<list.length)setTimeout(step,0);else{cxBusy=false;if(view==='ord')renderOrders();}};setTimeout(step,0);}
 // what the cheapest carrier on the rate cards would cost for a matched order (one consignment; size from the shipments' weight and cubic, length from its longest product)
 function cheapest(o){if(o.cx!==undefined)return o.cx;o.cx=null;if(o.wi<0||!(o.kg>0||o.vol>0)||o.p.zn>3)return null;
   const v=Math.max(o.vol||0,1e-6),lg=o.lg||0;const l=lg>0?lg:Math.cbrt(v),side=Math.sqrt(v/l);
   const its=[{name:'This order',l,w:side,h:side,kg:o.kg||0,qty:1}];
-  const sub=(SUBS.find(s=>s[1]===o.p.i)||[''])[0];
+  if(!SUBOF){SUBOF=new Map();SUBS.forEach(([n,i])=>{if(!SUBOF.has(i))SUBOF.set(i,n);});}const sub=SUBOF.get(o.p.i)||'';
   const q=carrierQuotes(o.p,sub,WH[o.wi].st,its,l).filter(c=>!c.off);
   const a=lg>0?apQuote(o.p,WH[o.wi].st,its):{why:'length unknown'};
   if(a.cost!=null)q.push({name:'Australia Post',med:a.cost});
@@ -554,8 +559,9 @@ function renderOrders(){
   PC.forEach(p=>{p.el.style.display=p.on?'':'none';if(p.ig)p.ig.style.display=p.on?'':'none';});
   const ch=L.reduce((s,o)=>s+o.ch,0),co=L.reduce((s,o)=>s+o.co,0),lossN=L.filter(o=>o.ch<o.co).length;
   const sg=v=>(v>=0?'+':'−')+money0(Math.abs(v));
-  const cxL=L.filter(o=>o.nsh===1&&cheapest(o)),cxSum=cxL.reduce((s,o)=>s+cheapest(o).cost,0),coSum=cxL.reduce((s,o)=>s+o.co,0);
-  document.getElementById('ostats').innerHTML=`<div><b>${L.length.toLocaleString()}</b><span>matched orders</span></div><div><b>${money0(ch)}</b><span>we charged</span></div><div><b>${money0(co)}</b><span>cost us</span></div><div><b class="${ch-co>=0?'g':'w'}">${sg(ch-co)}</b><span>charged minus cost</span></div><div><b>${L.length?Math.round(lossN/L.length*100):0}%</b><span>charged less than cost</span></div><div><b>${money0(cxSum)}</b><span>cheapest carrier on your rate cards, vs ${money0(coSum)} paid, for the ${cxL.length.toLocaleString()} single-shipment orders</span></div>`;
+  const pend=L.filter(o=>o.cx===undefined);if(pend.length)fillCheapest(pend);
+  const ready=!pend.length,cxL=ready?L.filter(o=>o.nsh===1&&o.cx):[],cxSum=cxL.reduce((s,o)=>s+o.cx.cost,0),coSum=cxL.reduce((s,o)=>s+o.co,0);
+  document.getElementById('ostats').innerHTML=`<div><b>${L.length.toLocaleString()}</b><span>matched orders</span></div><div><b>${money0(ch)}</b><span>we charged</span></div><div><b>${money0(co)}</b><span>cost us</span></div><div><b class="${ch-co>=0?'g':'w'}">${sg(ch-co)}</b><span>charged minus cost</span></div><div><b>${L.length?Math.round(lossN/L.length*100):0}%</b><span>charged less than cost</span></div>${ready?`<div><b>${money0(cxSum)}</b><span>cheapest carrier on your rate cards, vs ${money0(coSum)} paid, for the ${cxL.length.toLocaleString()} single-consignment orders</span></div>`:`<div><b>…</b><span>working out the cheapest carrier for ${pend.length.toLocaleString()} orders</span></div>`}`;
   const grp=(key,label,order)=>{const m=new Map();L.forEach(o=>{const k=key(o);const g=m.get(k)||{n:0,ch:0,co:0};g.n++;g.ch+=o.ch;g.co+=o.co;m.set(k,g);});
     let r=[...m.entries()];r.sort(order||((a,b)=>b[1].n-a[1].n));return r.map(([k,g])=>`<tr><td>${label(k)}</td><td>${g.n.toLocaleString()}</td><td>${money(g.ch/g.n)}</td><td>${money(g.co/g.n)}</td><td class="${g.ch>=g.co?'g':'w'}">${g.ch>=g.co?'+':'−'}${money(Math.abs(g.ch-g.co)/g.n)}</td></tr>`).join('');};
   {const m=new Map();L.forEach(o=>{const g=m.get(o.sz)||{n:0,ch:0,co:0,w:0,wn:0};g.n++;g.ch+=o.ch;g.co+=o.co;if(o.web!=null){g.w+=o.web;g.wn++;}m.set(o.sz,g);});

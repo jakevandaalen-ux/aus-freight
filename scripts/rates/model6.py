@@ -14,7 +14,7 @@ def tmean(v):
 rows=[]
 for r in M:
     pi,wi,ci,ch,co=r[0],r[1],r[2],r[3],r[4];sz=r[16]
-    if r[8]!=1 or r[9]!=1 or not sz or wi<0 or co<=0: continue
+    if r[8]!=1 or r[9]!=1 or not sz or wi<0 or co<=0 or (len(r)>23 and r[23]): continue
     z=P[pi][7]
     if z<0 or z>2: continue
     dst=over.get(pi,P[pi][3]);fr=WH[wi][0]
@@ -85,7 +85,8 @@ for dst in STS:
                 EST[(dst,fr,s,z)]=e;INFO[(dst,fr,s,z)]=(n,nl,F)
 # Bulky: priced from the carrier rate cards for a typical roof box / rooftop tent (25 kg, 0.70 m³, 2.0 m long) to that state and zone,
 # cheapest carrier we use for bulky items, then blended with the lane's own Bulky orders (card prices matched actual Bulky costs at a median 0.96)
-BG=json.load(open('/home/claude/au/bulky/bulky_grid.json'))['cost'];BULKY_SRC={}
+BCAL=json.load(open('/home/claude/au/bulky/calib.json'))['ratio']   # what we paid ÷ card price on past Bulky orders
+BG={k:v*BCAL for k,v in json.load(open('/home/claude/au/bulky/bulky_grid.json'))['cost'].items()};BULKY_SRC={}
 for dst in STS:
     for fr in WHST:
         for z in range(3):

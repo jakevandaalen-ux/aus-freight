@@ -13,7 +13,7 @@ def tmean(v):
 rows=[]
 for r in M:
     pi,wi,ci,ch,co=r[0],r[1],r[2],r[3],r[4];sz=r[16]
-    if r[8]!=1 or r[9]!=1 or not sz or wi<0 or co<=0: continue
+    if r[8]!=1 or r[9]!=1 or not sz or wi<0 or co<=0 or (len(r)>23 and r[23]): continue
     z=P[pi][7]
     if z<0 or z>2: continue
     dst=over.get(pi,P[pi][3]);fr=WH[wi][0]

@@ -48,7 +48,7 @@ for s in range(6):
 rm.cell(10,3,'Median of Priority ÷ Standard across the 2025 sheet, kept between 1.20 and 1.35 (Large was 2.1 and XL 1.0 in 2025 because those Standard prices were far below cost). Applied to every cell. Change these if you want a different Priority premium.').font=GREY
 notes=['How the prices are set',
  '1. Each order is sized the way the website does it: every product gets a 1–5 score from its longest side, cubic weight (250 kg/m³) and actual weight, and the order takes its biggest product\'s size. See the Freight SIZE RULES tab.',
- '2. Expected cost = what carriers actually charged us (invoiced cost, or the carrier estimate where not yet billed, plus 10% GST) on 5,882 matched orders, June–October 2026, that went as one invoice in one shipment.',
+ '2. Expected cost = what carriers charged us (plus 10% GST) on 21,585 orders, July 2025 to August 2026, matched in the sales, freight and carrier reports (Orders_Matched_All_3), that went from one warehouse as one consignment. Cost is the carrier\'s estimated cost in that file.',
  '3. Costs are averaged after dropping the top and bottom 10% of orders in each group, so one-off surcharges don\'t set the price.',
  '4. Each size × zone gets a national figure, separately for same-state and interstate deliveries. Each warehouse-to-state lane then gets a factor from its own orders (for example WA to VIC costs about 25% more than the interstate average). Lanes with few orders lean on the national figure; lanes with no orders use distance.',
  '4b. Lane factors are worked out separately for Small, Medium and Large-and-up, kept between 0.6× and 1.6×, and interstate lanes with few orders lean more on distance (for example QLD–WA, with 13 orders from Wangara to QLD). A warehouse\'s own state is never priced above the cheapest other warehouse into that state (this mainly lowers ACT from Fyshwick, whose local orders mostly went StarTrack and TNT).',
@@ -58,7 +58,7 @@ notes=['How the prices are set',
  '8. One rate for interstate XXL and Bulky to Metro Outer and Regional: these have one price only: Standard, set at what Priority would have cost, with no Priority option (the Priority price and time are left blank). The Standard cells are grey in the state tabs, use the Priority delivery times, and are marked "One rate" on the Cost model tab.',
  '',
  'What else changed from the 2025 sheet',
- '• New Bulky size: roof boxes and rooftop tents (product types Roof Boxes and Roof Top Tents, not their accessories) are Bulky. Today they are charged as XL or XXL. With only 76 past Bulky orders, Bulky is costed from the carrier rate cards instead: a typical roof box or tent (25 kg, 0.70 m³, 2.0 m long) priced to the 25 busiest postcodes in each state and zone with the cheapest carrier we use for bulky freight (StarTrack Road Express, TNT, Northline, or the state carrier in its own state), including fuel and length surcharges, then blended with the lane\'s own Bulky orders. On the 76 past orders, these card prices came out at a median 0.96 of what we actually paid. Bulky delivery times are copied from XXL.',
+ '• New Bulky size: roof boxes and rooftop tents (product types Roof Boxes and Roof Top Tents, not their accessories) are Bulky. Today they are charged as XL or XXL. With only 158 past Bulky orders, Bulky is costed from the carrier rate cards instead: a typical roof box or tent (25 kg, 0.70 m³, 2.0 m long) priced to the 25 busiest postcodes in each state and zone with the cheapest carrier we use for bulky freight (StarTrack Road Express, TNT, Northline, or the state carrier in its own state), including fuel and length surcharges, then blended with the lane\'s own Bulky orders. On the 158 past Bulky orders, what we paid came out at a median 0.86 of these card prices, so the card prices are scaled by 0.86. Bulky delivery times are copied from XXL.',
  '• The TAS tab now has a From SA table and the WA tab a From TAS table (both were missing).',
  '• NT Priority XL and XXL now have prices from every warehouse (most were blank).',
  '• Postcode zones tab: every Australia Post postcode with its website zone name. 97 NSW Outer Metro postcodes (Central Coast, Newcastle, Wollongong, Blue Mountains, Coffs Harbour, Albury, Griffith) were missing from the 2025 Auspost template and are added, marked "Added".',
@@ -68,7 +68,7 @@ notes=['How the prices are set',
  '• These are break-even prices on today\'s carrier mix. Medium is the biggest change: most Medium orders are 1.05–1.8 m long (roof bars), which Australia Post can\'t carry, so they go StarTrack at $40–55. See the Summary tab for an option that splits Medium at 1.05 m.',
  '• Large, XL and XXL have far fewer orders than Small and Medium, especially interstate Regional, so those prices are less certain. The Cost model tab shows how many orders sit behind every price.',
  '• Carrier rate cards weren\'t used directly: they need each carrier\'s postcode zones, fuel levy and surcharges, which weren\'t in the exports. Costs are what we were actually charged.',
- '• The Impact tab re-prices the same 5,882 orders under these rates so you can see the effect before changing the website.']
+ '• The Impact tab re-prices the same 21,585 orders under these rates so you can see the effect before changing the website.']
 for i,n in enumerate(notes):
     c=rm.cell(17+i,1,n);c.font=BOLD if n and n[0] not in '0123456789•' else NORM
 rm.column_dimensions['A'].width=58;rm.column_dimensions['B'].width=12;rm.column_dimensions['C'].width=110
@@ -158,7 +158,7 @@ M=json.load(open(A+'matched.json'))
 r=2
 for x in M:
     pi,wi,ci,ch,co=x[0],x[1],x[2],x[3],x[4];sz=x[16]
-    if x[8]!=1 or x[9]!=1 or not sz or wi<0 or co<=0: continue
+    if x[8]!=1 or x[9]!=1 or not sz or wi<0 or co<=0 or (len(x)>23 and x[23]): continue
     z=P[pi][7]
     if z<0 or z>2: continue
     dst=over.get(pi,P[pi][3]);fr=WH[wi][0]
