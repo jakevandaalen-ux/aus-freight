@@ -55,7 +55,7 @@ notes=['How the prices are set',
  '5. Where a lane has its own orders for a size and zone, those orders are blended in. Prices never go down from a smaller size to a larger one, or from Metro to Outer to Regional.',
  '6. Standard = expected cost × (1 + freight margin), rounded up. Priority = Standard × the Priority ratio for its size (above), at least the minimum uplift, rounded up. We don\'t yet have enough priority shipments to cost Priority separately.',
  '7. Delivery time frames are copied from the 2025 sheet, except that there is no 0–1 day Priority any more: those 30 cells (all same-state Metro deliveries) are now Priority 1–2 days and Standard 1–3 days (was 1–2 days).',
- '8. One rate for interstate XXL and Bulky to Metro Outer and Regional: these have a single price, the Priority price, used for both Standard and Priority. Shown in the state tabs as the same figure in both tables (grey cells in the Standard table), and marked "One rate" on the Cost model tab.',
+ '8. One rate for interstate XXL and Bulky to Metro Outer and Regional: these have one price only: Standard, set at what Priority would have cost, with no Priority option (the Priority price and time are left blank). The Standard cells are grey in the state tabs, use the Priority delivery times, and are marked "One rate" on the Cost model tab.',
  '',
  'What else changed from the 2025 sheet',
  '• New Bulky size: roof boxes and rooftop tents (product types Roof Boxes and Roof Top Tents, not their accessories) are Bulky. Today they are charged as XL or XXL. With only 76 past Bulky orders, Bulky is costed from the carrier rate cards instead: a typical roof box or tent (25 kg, 0.70 m³, 2.0 m long) priced to the 25 busiest postcodes in each state and zone with the cheapest carrier we use for bulky freight (StarTrack Road Express, TNT, Northline, or the state carrier in its own state), including fuel and length surcharges, then blended with the lane\'s own Bulky orders. On the 76 past orders, these card prices came out at a median 0.96 of what we actually paid. Bulky delivery times are copied from XXL.',
@@ -97,9 +97,9 @@ for dst in STS:
                 one=dst!=fr and z in (1,2) and SZ[s] in ('XXL','Bulky')
                 if one:
                     base_=rnd(f'F{r}*(1+{MARGIN})')
-                    cm.cell(r,14,'='+rnd(f'MAX(({base_})*L{r},({base_})+{MINUP})')).number_format=MONEY
-                    cm.cell(r,13,f'=N{r}').number_format=MONEY
-                    cm.cell(r,16,'One rate: interstate XXL/Bulky to Metro Outer or Regional is charged at the Priority price for both services').font=GREY
+                    cm.cell(r,13,'='+rnd(f'MAX(({base_})*L{r},({base_})+{MINUP})')).number_format=MONEY
+                    cm.cell(r,14,'Not offered').font=GREY
+                    cm.cell(r,16,'One rate: interstate XXL/Bulky to Metro Outer or Regional. Standard is charged at what Priority would have been; no Priority option').font=GREY
                 else:
                     cm.cell(r,13,'='+rnd(f'F{r}*(1+{MARGIN})')).number_format=MONEY
                     cm.cell(r,14,'='+rnd(f'MAX(M{r}*L{r},M{r}+{MINUP})')).number_format=MONEY
@@ -130,12 +130,15 @@ for dst in STS:
                     c=ws.cell(top+2+s,2+k*4+z)
                     if kind in('standard','priority'):
                         rr=ROW[(dst,f,s,z)];col='M' if kind=='standard' else 'N'
-                        c.value=f"='Cost model'!{col}{rr}";c.number_format=MONEY;c.font=GREEN
+                        one_=f!=dst and z in (1,2) and SZ[s] in ('XXL','Bulky')
+                        if kind=='priority' and one_: c.value=None
+                        else: c.value=f"='Cost model'!{col}{rr}";c.number_format=MONEY;c.font=GREEN
                         if kind=='standard' and f!=dst and z in (1,2) and SZ[s] in ('XXL','Bulky'): c.fill=PatternFill('solid',fgColor='E4E4E4')
                     else:
                         svc=kind.split('-')[1]
                         src=f if f in E[dst] else ('VIC' if dst=='TAS' else 'VIC')
-                        v=eta(dst,src,svc,min(s,4),z);c.value=(v or '').strip().replace(' days',' Days').replace(' day',' Day') if v else None;c.font=NORM
+                        one_=f!=dst and z in (1,2) and SZ[s] in ('XXL','Bulky')
+                        v=None if (svc=='priority' and one_) else eta(dst,src,'priority' if one_ else svc,min(s,4),z);c.value=(v or '').strip().replace(' days',' Days').replace(' day',' Day') if v else None;c.font=NORM
                         if f not in E[dst]: c.comment=Comment(f'No {dst} from {f} times in the 2025 sheet; copied from VIC. Check.','Claude')
                     c.border=BOX;c.alignment=Alignment(horizontal='center')
     block(3,'Standard','standard');block(12,'Priority','priority')
@@ -166,7 +169,7 @@ for x in M:
     vals=[dst,fr,ZN[z],SZ[si],svc,'Yes' if dst==fr else 'No',round(ch,2),round(co*1.1,2),old]
     for j,v in enumerate(vals,1): im.cell(r,j,v).font=NORM
     rr=ROW[(dst,fr,si,z)]
-    im.cell(r,10,f"=IF(E{r}=\"Priority\",'Cost model'!N{rr},'Cost model'!M{rr})").font=GREEN
+    im.cell(r,10,f"=IF(AND(E{r}=\"Priority\",ISNUMBER('Cost model'!N{rr})),'Cost model'!N{rr},'Cost model'!M{rr})").font=GREEN
     im.cell(r,11,f'=J{r}-H{r}').font=NORM;im.cell(r,12,f'=G{r}-H{r}').font=NORM
     for j in (7,8,9,10,11,12): im.cell(r,j).number_format=MONEY
     r+=1

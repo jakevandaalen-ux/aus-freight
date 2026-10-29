@@ -796,7 +796,7 @@ function calc(){if(view!=='calc')return;
   const charge=svc==='priority'?pri:std;
   const bulkOn=document.getElementById('c-bulk').checked,bulkIt=its.find(i=>i.bk);
   const nsz=bulkOn&&bulkIt?5:sz,NR=bulkOn?NEWRATES.b:NEWRATES.n;
-  const nr=NR[dst]&&NR[dst][frSt],nstd=nr?nr.standard[nsz][z]:null,npri=nr?nr.priority[nsz][z]:null,ncharge=svc==='priority'?npri:nstd;
+  const nr=NR[dst]&&NR[dst][frSt],nstd=nr?nr.standard[nsz][z]:null,npri=nr?nr.priority[nsz][z]:null,noPri=svc==='priority'&&npri==null&&nstd!=null,ncharge=svc==='priority'&&!noPri?npri:nstd;
   const lb2=longest>1.05;const big=its.find(i=>Math.max(i.l,i.w,i.h)>1.05||(i.kg||0)>22||i.l*i.w*i.h>0.25);
   const sim=similar(p,wi,ck,sz,longest);
   const pal=document.getElementById('c-pal').checked;
@@ -816,14 +816,14 @@ function calc(){if(view!=='calc')return;
   if(chosen){const what=chosen.card?`the Australia Post rate of ${money(chosen.med)}`:`${esc(chosen.name)}'s ${money(chosen.med)}`;
     const line=(lab,c)=>{if(c==null)return `<p class="msg">${lab} has no ${svc} price for this order.</p>`;const gap=c-chosen.med;
       return gap>=0?`<p class="msg g">${lab} of ${money(c)} covers ${what} with ${money(gap)} to spare.</p>`:`<p class="msg w">${lab} of ${money(c)} is ${money(-gap)} short of ${what}.</p>`;};
-    msg=line(`Today's ${svc} charge`,charge)+line(`The new ${svc} charge`,ncharge);}
+    msg=line(`Today's ${svc} charge`,charge)+line(noPri?`Priority isn't offered on the new rates for this order, so the new Standard charge`:`The new ${svc} charge`,ncharge);}
   let marg='';
   if(value>0&&chosen){const pre=value/1.1-pcost,after=pre+(charge||0)/1.1-chosen.med/1.1,afterN=pre+(ncharge||0)/1.1-chosen.med/1.1;
-    marg=`<dl class="kv"><dt>Order value (incl. GST)</dt><dd>${money(value)}</dd><dt>Product cost (ex GST)</dt><dd>${money(pcost)}</dd><dt>Margin before freight (ex GST)</dt><dd>${pre<0?'−':''}${money(Math.abs(pre))}</dd><div class="sep"></div><dt>Margin after ${esc(chosen.card?'Australia Post':chosen.name)} · today's ${svc} charge</dt><dd class="${after>=0?'g':'w'}" style="font-weight:600">${after<0?'−':''}${money(Math.abs(after))}</dd><dt>Margin after ${esc(chosen.card?'Australia Post':chosen.name)} · new ${svc} charge</dt><dd class="${afterN>=0?'g':'w'}" style="font-weight:600">${afterN<0?'−':''}${money(Math.abs(afterN))}</dd></dl>`;}
+    marg=`<dl class="kv"><dt>Order value (incl. GST)</dt><dd>${money(value)}</dd><dt>Product cost (ex GST)</dt><dd>${money(pcost)}</dd><dt>Margin before freight (ex GST)</dt><dd>${pre<0?'−':''}${money(Math.abs(pre))}</dd><div class="sep"></div><dt>Margin after ${esc(chosen.card?'Australia Post':chosen.name)} · today's ${svc} charge</dt><dd class="${after>=0?'g':'w'}" style="font-weight:600">${after<0?'−':''}${money(Math.abs(after))}</dd><dt>Margin after ${esc(chosen.card?'Australia Post':chosen.name)} · new ${noPri?'standard (only option)':svc} charge</dt><dd class="${afterN>=0?'g':'w'}" style="font-weight:600">${afterN<0?'−':''}${money(Math.abs(afterN))}</dd></dl>`;}
   out.innerHTML=head+`
    <div class="cmpw"><table class="cmp"><thead><tr><th>Freight charge</th><th class="${svc==='standard'?'on':''}">Standard</th><th class="${svc==='priority'?'on':''}">Priority</th></tr></thead><tbody>
      <tr><td>Today · ${SZ[sz]} <small>2025 sheet</small></td><td class="${svc==='standard'?'on':''}">${std==null?'–':money(std)}<small>${esc(es||'')}</small></td><td class="${svc==='priority'?'on':''}">${pri==null?'blank':money(pri)}<small>${esc(ep||'')}</small></td></tr>
-     <tr class="new"><td>New · ${nsz===5?'Bulky':SZ[sz]} <small>proposed rates${bulkOn?' with Bulky':''}</small></td><td class="${svc==='standard'?'on':''}">${nstd==null?'–':money(nstd)}</td><td class="${svc==='priority'?'on':''}">${npri==null?'–':money(npri)}</td></tr>
+     <tr class="new"><td>New · ${nsz===5?'Bulky':SZ[sz]} <small>proposed rates${bulkOn?' with Bulky':''}</small></td><td class="${svc==='standard'?'on':''}">${nstd==null?'–':money(nstd)}</td><td class="${svc==='priority'?'on':''}">${npri==null?'<small style="font-size:13px">Not offered</small>':money(npri)}</td></tr>
      <tr><td>Change</td>${[[std,nstd],[pri,npri]].map(([a,b],k)=>`<td class="${(k?svc==='priority':svc==='standard')?'on':''} ${a!=null&&b!=null?(b>a?'up':'dn'):''}">${a!=null&&b!=null?(b>=a?'+':'−')+money(Math.abs(b-a)):'–'}</td>`).join('')}</tr>
    </tbody></table></div>
    <h2 style="font-size:16px;margin:0">What it costs us to send${pal?` · ${np} pallet${np>1?'s':''}`:''}</h2>
