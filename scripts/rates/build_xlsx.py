@@ -48,6 +48,7 @@ notes=['How the prices are set',
  '5. Where a lane has its own orders for a size and zone, those orders are blended in. Prices never go down from a smaller size to a larger one, or from Metro to Outer to Regional.',
  '6. Standard = expected cost × (1 + freight margin), rounded up. Priority = Standard × the Priority ratio for its size (above), at least the minimum uplift, rounded up. We don\'t yet have enough priority shipments to cost Priority separately.',
  '7. Delivery time frames are copied from the 2025 sheet unchanged.',
+ '8. One rate for interstate XXL to Metro Outer and Regional: these have a single price, the Priority price, used for both Standard and Priority. Shown in the state tabs as the same figure in both tables (grey cells), and marked "One rate" on the Cost model tab.',
  '',
  'What else changed from the 2025 sheet',
  '• The TAS tab now has a From SA table and the WA tab a From TAS table (both were missing).',
@@ -68,7 +69,7 @@ MARGIN="'Read me'!$B$5";MINUP="'Read me'!$B$6";RND="'Read me'!$B$7"
 def rnd(x): return f'IF({x}<={RND},CEILING({x}+0.5,1)-0.5,CEILING({x},5))'
 # ---------- Cost model
 cm=wb.create_sheet('Cost model')
-hdr=['Key','Delivering to','Ships from','Size','Zone','Expected cost incl. GST','Orders in this cell','Orders on this lane','Lane factor','2025 Standard','2025 Priority','Priority ratio','New Standard','New Priority','Standard change']
+hdr=['Key','Delivering to','Ships from','Size','Zone','Expected cost incl. GST','Orders in this cell','Orders on this lane','Lane factor','2025 Standard','2025 Priority','Priority ratio','New Standard','New Priority','Standard change','Rule']
 for j,h in enumerate(hdr,1):
     c=cm.cell(1,j,h);c.font=BOLD;c.fill=HDR;c.alignment=Alignment(wrap_text=True,vertical='top')
 r=2;ROW={}
@@ -85,14 +86,21 @@ for dst in STS:
                     c=cm.cell(r,j,v);c.font=NORM
                 cm.cell(r,6).number_format=MONEY;cm.cell(r,10).number_format=MONEY;cm.cell(r,11).number_format=MONEY;cm.cell(r,9).number_format='0.00'
                 cm.cell(r,12,f"=INDEX('Read me'!$B$10:$B$14,{s+1})").number_format='0.00'
-                cm.cell(r,13,'='+rnd(f'F{r}*(1+{MARGIN})')).number_format=MONEY
-                cm.cell(r,14,'='+rnd(f'MAX(M{r}*L{r},M{r}+{MINUP})')).number_format=MONEY
+                one=dst!=fr and z in (1,2) and SZ[s] in ('XXL','Bulky')
+                if one:
+                    base_=rnd(f'F{r}*(1+{MARGIN})')
+                    cm.cell(r,14,'='+rnd(f'MAX(({base_})*L{r},({base_})+{MINUP})')).number_format=MONEY
+                    cm.cell(r,13,f'=N{r}').number_format=MONEY
+                    cm.cell(r,16,'One rate: interstate XXL/Bulky to Metro Outer or Regional is charged at the Priority price for both services').font=GREY
+                else:
+                    cm.cell(r,13,'='+rnd(f'F{r}*(1+{MARGIN})')).number_format=MONEY
+                    cm.cell(r,14,'='+rnd(f'MAX(M{r}*L{r},M{r}+{MINUP})')).number_format=MONEY
                 cm.cell(r,15,f'=IF(ISNUMBER(J{r}),M{r}-J{r},"new")').number_format='+$#,##0.00;-$#,##0.00;-'
                 for j in range(12,16): cm.cell(r,j).font=NORM
                 ROW[(dst,fr,s,z)]=r;r+=1
 LAST=r-1
 for j,w in enumerate([24,10,10,8,12,12,10,10,9,11,11,9,12,12,11],1): cm.column_dimensions[CL(j)].width=w
-cm.freeze_panes='B2';cm.auto_filter.ref=f'A1:O{LAST}'
+cm.freeze_panes='B2';cm.auto_filter.ref=f'A1:P{LAST}';cm.column_dimensions['P'].width=60
 cm.cell(1,6).comment=Comment('Trimmed average (top and bottom 10% dropped) of what carriers charged us incl. GST, for this size and zone, adjusted for the warehouse-to-state lane. See Read me.','Claude')
 # ---------- State tabs
 for dst in STS:
@@ -115,6 +123,7 @@ for dst in STS:
                     if kind in('standard','priority'):
                         rr=ROW[(dst,f,s,z)];col='M' if kind=='standard' else 'N'
                         c.value=f"='Cost model'!{col}{rr}";c.number_format=MONEY;c.font=GREEN
+                        if f!=dst and z in (1,2) and SZ[s] in ('XXL','Bulky'): c.fill=PatternFill('solid',fgColor='E4E4E4')
                     else:
                         svc=kind.split('-')[1]
                         src=f if f in E[dst] else ('VIC' if dst=='TAS' else 'VIC')
