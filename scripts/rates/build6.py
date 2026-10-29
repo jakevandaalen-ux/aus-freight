@@ -57,7 +57,7 @@ notes=['How the prices are set',
  '8. One rate for interstate XXL and Bulky to Metro Outer and Regional: these have a single price, the Priority price, used for both Standard and Priority. Shown in the state tabs as the same figure in both tables (grey cells), and marked "One rate" on the Cost model tab.',
  '',
  'What else changed from the 2025 sheet',
- '• New Bulky size: any product of 0.4 m³ or more (cubic weight 100 kg+), such as roof boxes, rooftop tents, platforms, trays and ladders, is Bulky. Today those are charged as XL or XXL. Taking them out lowers XL and XXL, since Bulky orders cost about $190–$220 to send against about $125 for other XL and XXL orders. Bulky delivery times are copied from XXL.',
+ '• New Bulky size: roof boxes and rooftop tents (product types Roof Boxes and Roof Top Tents, not their accessories) are Bulky. Today they are charged as XL or XXL. Bulky delivery times are copied from XXL.',
  '• The TAS tab now has a From SA table and the WA tab a From TAS table (both were missing).',
  '• NT Priority XL and XXL now have prices from every warehouse (most were blank).',
  '• Postcode zones tab: every Australia Post postcode with its website zone name. 97 NSW Outer Metro postcodes (Central Coast, Newcastle, Wollongong, Blue Mountains, Coffs Harbour, Albury, Griffith) were missing from the 2025 Auspost template and are added, marked "Added".',
@@ -230,14 +230,14 @@ fs=wb.create_sheet('Freight SIZE RULES')
 fs['A1']='Freight size rules (how the website scores each product)';fs['A1'].font=H1
 rules=[('Score','Size','Longest side','Cubic weight (L×W×H×250)','Actual weight'),
  (1,'Small','under 0.5 m','under 10 kg','under 5 kg'),(2,'Medium','0.5 to under 1.8 m','10 to under 25 kg','5 to under 15 kg'),
- (3,'Large','1.8 to under 3.5 m','25 to under 100 kg','15 to under 22 kg'),(4,'XL','3.5 to under 5 m','100 to under 180 kg','22 to under 35 kg'),(5,'XXL','5 m or more','180 kg or more','35 kg or more'),(6,'Bulky','–','100 kg or more (0.4 m³+)','–')]
+ (3,'Large','1.8 to under 3.5 m','25 to under 100 kg','15 to under 22 kg'),(4,'XL','3.5 to under 5 m','100 to under 180 kg','22 to under 35 kg'),(5,'XXL','5 m or more','180 kg or more','35 kg or more'),(6,'Bulky','Roof boxes and rooftop tents only','–','–')]
 for i,rw in enumerate(rules):
     for j,v in enumerate(rw,1):
         c=fs.cell(3+i,j,v);c.font=BOLD if i==0 else NORM
         if i==0:c.fill=HDR
-fs['A9']='Bulky: any product with a cubic weight of 100 kg or more (0.4 m³ or more, e.g. 2.2 × 0.9 × 0.45 m) is Bulky, whatever its other scores. An order with a Bulky product is Bulky.';fs['A9'].font=BOLD
-fs['A10']='Otherwise a product\'s size is the highest of its three scores. An order takes the size of its biggest product. Products with no dimensions or weight score 1 (Small) on that measure; 15,773 products in the 20 Oct 2026 export have neither, so the website treats them as Small.';fs['A10'].font=NORM
-fs['A11']='The 2025 sheet\'s version of this tab listed Large 1.8–2.5 m, XL 2.5–3.0 m and XXL 3.0 m+, and no cubic weight. Those aren\'t the rules the website uses.';fs['A11'].font=GREY
+fs['A11']='Bulky: roof boxes and rooftop tents (product types "Roof Boxes" and "Roof Top Tents"; their accessories are not Bulky) are Bulky, whatever their other scores. An order with a Bulky product is Bulky.';fs['A11'].font=BOLD
+fs['A12']='Every other product\'s size is the highest of its three scores. An order takes the size of its biggest product. Products with no dimensions or weight score 1 (Small) on that measure; 15,773 products in the 20 Oct 2026 export have neither, so the website treats them as Small.';fs['A12'].font=NORM
+fs['A13']='The 2025 sheet\'s version of this tab listed Large 1.8–2.5 m, XL 2.5–3.0 m and XXL 3.0 m+, and no cubic weight. Those aren\'t the rules the website uses.';fs['A13'].font=GREY
 for j,w in enumerate([8,10,22,28,20],1): fs.column_dimensions[CL(j)].width=w
 # ---------- Source hierarchy
 sh=wb.create_sheet('Source Hierarchy')
