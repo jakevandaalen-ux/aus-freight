@@ -83,6 +83,16 @@ for dst in STS:
                 e=base[(loc,s,z)]*F;v=lcell.get((dst,fr,s,z),[]);n=len(v)
                 if n: e=(n*tmean(v)+(10 if loc else 20)*e)/(n+(10 if loc else 20))
                 EST[(dst,fr,s,z)]=e;INFO[(dst,fr,s,z)]=(n,nl,F)
+# Bulky: priced from the carrier rate cards for a typical roof box / rooftop tent (25 kg, 0.70 m³, 2.0 m long) to that state and zone,
+# cheapest carrier we use for bulky items, then blended with the lane's own Bulky orders (card prices matched actual Bulky costs at a median 0.96)
+BG=json.load(open('/home/claude/au/bulky/bulky_grid.json'))['cost'];BULKY_SRC={}
+for dst in STS:
+    for fr in WHST:
+        for z in range(3):
+            g=BG.get(f'{dst}|{fr}|{z}')
+            if g is None: BULKY_SRC[(dst,fr,z)]='model';continue
+            v=lcell.get((dst,fr,5,z),[]);n=len(v)
+            EST[(dst,fr,5,z)]=(n*tmean(v)+10*g)/(n+10) if n else g;BULKY_SRC[(dst,fr,z)]='card'
 # a warehouse's own state should never cost more than shipping in from another state: cap same-state at the cheapest interstate lane
 CAPPED=set()
 for dst in STS:
@@ -96,7 +106,7 @@ for dst in STS:
     for fr in WHST:
         for z in range(3):
             m=0
-            for s in range(NS): m=max(m,EST[(dst,fr,s,z)]);EST[(dst,fr,s,z)]=m
+            for s in range(5): m=max(m,EST[(dst,fr,s,z)]);EST[(dst,fr,s,z)]=m   # Bulky stands on its own
         for s in range(NS):
             m=0
             for z in range(3): m=max(m,EST[(dst,fr,s,z)]);EST[(dst,fr,s,z)]=m
