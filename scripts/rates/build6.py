@@ -51,10 +51,11 @@ notes=['How the prices are set',
  '2. Expected cost = what carriers actually charged us (invoiced cost, or the carrier estimate where not yet billed, plus 10% GST) on 5,882 matched orders, June–October 2026, that went as one invoice in one shipment.',
  '3. Costs are averaged after dropping the top and bottom 10% of orders in each group, so one-off surcharges don\'t set the price.',
  '4. Each size × zone gets a national figure, separately for same-state and interstate deliveries. Each warehouse-to-state lane then gets a factor from its own orders (for example WA to VIC costs about 25% more than the interstate average). Lanes with few orders lean on the national figure; lanes with no orders use distance.',
+ '4b. Lane factors are worked out separately for Small, Medium and Large-and-up, kept between 0.6× and 1.6×, and interstate lanes with few orders lean more on distance (for example QLD–WA, with 13 orders from Wangara to QLD). A warehouse\'s own state is never priced above the cheapest other warehouse into that state (this mainly lowers ACT from Fyshwick, whose local orders mostly went StarTrack and TNT).',
  '5. Where a lane has its own orders for a size and zone, those orders are blended in. Prices never go down from a smaller size to a larger one, or from Metro to Outer to Regional.',
  '6. Standard = expected cost × (1 + freight margin), rounded up. Priority = Standard × the Priority ratio for its size (above), at least the minimum uplift, rounded up. We don\'t yet have enough priority shipments to cost Priority separately.',
  '7. Delivery time frames are copied from the 2025 sheet, except that there is no 0–1 day Priority any more: those 30 cells (all same-state Metro deliveries) are now Priority 1–2 days and Standard 1–3 days (was 1–2 days).',
- '8. One rate for interstate XXL and Bulky to Metro Outer and Regional: these have a single price, the Priority price, used for both Standard and Priority. Shown in the state tabs as the same figure in both tables (grey cells), and marked "One rate" on the Cost model tab.',
+ '8. One rate for interstate XXL and Bulky to Metro Outer and Regional: these have a single price, the Priority price, used for both Standard and Priority. Shown in the state tabs as the same figure in both tables (grey cells in the Standard table), and marked "One rate" on the Cost model tab.',
  '',
  'What else changed from the 2025 sheet',
  '• New Bulky size: roof boxes and rooftop tents (product types Roof Boxes and Roof Top Tents, not their accessories) are Bulky. Today they are charged as XL or XXL. Bulky delivery times are copied from XXL.',
@@ -130,7 +131,7 @@ for dst in STS:
                     if kind in('standard','priority'):
                         rr=ROW[(dst,f,s,z)];col='M' if kind=='standard' else 'N'
                         c.value=f"='Cost model'!{col}{rr}";c.number_format=MONEY;c.font=GREEN
-                        if f!=dst and z in (1,2) and SZ[s] in ('XXL','Bulky'): c.fill=PatternFill('solid',fgColor='E4E4E4')
+                        if kind=='standard' and f!=dst and z in (1,2) and SZ[s] in ('XXL','Bulky'): c.fill=PatternFill('solid',fgColor='E4E4E4')
                     else:
                         svc=kind.split('-')[1]
                         src=f if f in E[dst] else ('VIC' if dst=='TAS' else 'VIC')

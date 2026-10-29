@@ -61,18 +61,35 @@ def lanef(dst,fr):
     if dst==fr:
         F,n=LF.get((dst,fr),(1,0));return (n*F+10)/(n+10),n
     prior=math.exp(a+b*math.log(km(CAP[dst],(WHST[fr][4],WHST[fr][5]))))
-    F,n=LF.get((dst,fr),(prior,0));return (n*F+10*prior)/(n+10),n
+    F,n=LF.get((dst,fr),(prior,0));return (n*F+30*prior)/(n+30),n   # thin interstate lanes lean on distance
+# lane factor by size group (Small / Medium / Large and up), shrunk toward the lane's overall factor and kept within 0.6-1.6x
+G=lambda s:0 if s==0 else 1 if s==1 else 2
+lg_=collections.defaultdict(list)
+for x in rows: lg_[(x['dst'],x['fr'],G(x['sz']))].append(x['c']/base[(x['loc'],x['sz'],x['z'])])
+def lanefg(dst,fr,s):
+    F0,nl=lanef(dst,fr);v=lg_.get((dst,fr,G(s)),[]);n=len(v)
+    F=(n*st.median(v)+20*F0)/(n+20) if n else F0
+    return min(1.6,max(0.6,F)),nl
 lcell=collections.defaultdict(list)
 for x in rows: lcell[(x['dst'],x['fr'],x['sz'],x['z'])].append(x['c'])
 EST={};INFO={}
 for dst in STS:
     for fr in WHST:
-        F,nl=lanef(dst,fr);loc=dst==fr
+        loc=dst==fr
         for s in range(5):
+            F,nl=lanefg(dst,fr,s)
             for z in range(3):
                 e=base[(loc,s,z)]*F;v=lcell.get((dst,fr,s,z),[]);n=len(v)
-                if n: e=(n*tmean(v)+10*e)/(n+10)
+                if n: e=(n*tmean(v)+(10 if loc else 20)*e)/(n+(10 if loc else 20))
                 EST[(dst,fr,s,z)]=e;INFO[(dst,fr,s,z)]=(n,nl,F)
+# a warehouse's own state should never cost more than shipping in from another state: cap same-state at the cheapest interstate lane
+CAPPED=set()
+for dst in STS:
+    if dst not in WHST: continue
+    for s in range(5):
+        for z in range(3):
+            other=min(EST[(d,f,s,z)] for (d,f,s2,z2) in [(dst,f,s,z) for f in WHST if f!=dst])
+            if EST[(dst,dst,s,z)]>other: EST[(dst,dst,s,z)]=other;CAPPED.add((dst,s,z))
 # monotone: sizes then zones
 for dst in STS:
     for fr in WHST:
