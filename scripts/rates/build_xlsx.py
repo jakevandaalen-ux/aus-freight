@@ -26,6 +26,12 @@ H1=Font(name=F,bold=True,size=14);HDR=PatternFill('solid',fgColor='DDE6EE');YEL=
 thin=Side(style='thin',color='BBBBBB');BOX=Border(top=thin,bottom=thin,left=thin,right=thin)
 MONEY='$#,##0.00';MONEY0='$#,##0'
 wb=Workbook()
+def eta(d,f,svc,s,z):
+    p=(E[d][f]['priority'][s][z] or '').strip().lower();st_=(E[d][f]['standard'][s][z] or '').strip().lower()
+    if p.startswith('0-1'):   # no 0-1 day Express: Priority becomes 1-2 days and Standard moves one step slower
+        p='1-2 days'
+        if st_ in ('0-1 day','1-2 days'): st_='1-3 days'
+    return p if svc=='priority' else st_
 # ---------- Read me / settings
 rm=wb.active;rm.title='Read me'
 rm['A1']='RRG Website Shipping · Australia · proposed rates';rm['A1'].font=H1
@@ -47,7 +53,7 @@ notes=['How the prices are set',
  '4. Each size × zone gets a national figure, separately for same-state and interstate deliveries. Each warehouse-to-state lane then gets a factor from its own orders (for example WA to VIC costs about 25% more than the interstate average). Lanes with few orders lean on the national figure; lanes with no orders use distance.',
  '5. Where a lane has its own orders for a size and zone, those orders are blended in. Prices never go down from a smaller size to a larger one, or from Metro to Outer to Regional.',
  '6. Standard = expected cost × (1 + freight margin), rounded up. Priority = Standard × the Priority ratio for its size (above), at least the minimum uplift, rounded up. We don\'t yet have enough priority shipments to cost Priority separately.',
- '7. Delivery time frames are copied from the 2025 sheet unchanged.',
+ '7. Delivery time frames are copied from the 2025 sheet, except that there is no 0–1 day Priority any more: those 30 cells (all same-state Metro deliveries) are now Priority 1–2 days and Standard 1–3 days (was 1–2 days).',
  '8. One rate for interstate XXL to Metro Outer and Regional: these have a single price, the Priority price, used for both Standard and Priority. Shown in the state tabs as the same figure in both tables (grey cells), and marked "One rate" on the Cost model tab.',
  '',
  'What else changed from the 2025 sheet',
@@ -127,7 +133,7 @@ for dst in STS:
                     else:
                         svc=kind.split('-')[1]
                         src=f if f in E[dst] else ('VIC' if dst=='TAS' else 'VIC')
-                        v=E[dst][src][svc][s][z];c.value=(v or '').strip().replace(' days',' Days').replace(' day',' Day') if v else None;c.font=NORM
+                        v=eta(dst,src,svc,min(s,4),z);c.value=(v or '').strip().replace(' days',' Days').replace(' day',' Day') if v else None;c.font=NORM
                         if f not in E[dst]: c.comment=Comment(f'No {dst} from {f} times in the 2025 sheet; copied from VIC. Check.','Claude')
                     c.border=BOX;c.alignment=Alignment(horizontal='center')
     block(3,'Standard','standard');block(11,'Priority','priority')
